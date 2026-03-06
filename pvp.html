@@ -1,0 +1,460 @@
+
+AI 摘要
+賽事企劃書詳述水晶衝突社群賽的宗旨、BO3/BO5賽制、隊伍總分上限16分，並規劃23:00頒獎時程。
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第一屆繁中服水晶衝突社群賽 - 賽事企劃書</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #0f1115;
+            color: #e2e8f0;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(220, 38, 38, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(234, 179, 8, 0.05), transparent 25%);
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+        .heading-gradient {
+            background: linear-gradient(to right, #f87171, #facc15);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .table-row-alt:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f1115; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ef4444; }
+    </style>
+</head>
+<body class="antialiased min-h-screen pb-12">
+
+    <!-- Hero Section -->
+    <header class="relative pt-20 pb-16 text-center overflow-hidden border-b border-red-900/30">
+        <div class="absolute inset-0 z-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center"></div>
+        <div class="absolute inset-0 z-0 bg-gradient-to-b from-transparent to-[#0f1115]"></div>
+        <div class="relative z-10 max-w-4xl mx-auto px-4">
+            <span class="text-red-500 font-bold tracking-widest uppercase text-sm mb-2 block">Crystalline Conflict Community Tournament</span>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-black mb-4 heading-gradient tracking-tight">
+                第一屆繁中服水晶衝突社群賽
+            </h1>
+            <p class="text-xl text-gray-400 font-light mt-4">不僅是水晶的推動者，更是社群的開創者 —— 參與，即是榮耀。</p>
+            <div class="mt-8 inline-block px-6 py-2 border border-red-500/50 rounded-full bg-red-500/10 text-red-400 font-medium">
+                企劃提案書 PROPOSAL
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 space-y-12">
+
+        <!-- Section 1 & 2: 宗旨與效益 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <section class="glass-panel p-8 rounded-xl border-t-4 border-red-500 hover:border-red-400 transition-colors">
+                <h2 class="text-2xl font-bold mb-4 flex items-center text-white">
+                    <svg class="w-6 h-6 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    企劃宗旨與目的
+                </h2>
+                <ul class="space-y-4 text-gray-300 leading-relaxed">
+                    <li><strong class="text-red-400">核心宗旨：</strong>旨在推廣《Final Fantasy XIV》中的「水晶衝突」PvP模式，活絡繁中服社群，並促進玩家間的和諧與技術交流。</li>
+                    <li><strong class="text-red-400">活動目的：</strong>透過舉辦高品質社群賽事，吸引休閒玩家跨出舒適圈嘗試競技玩法，為有志一同的玩家提供展現實力的殿堂。</li>
+                </ul>
+            </section>
+
+            <section class="glass-panel p-8 rounded-xl border-t-4 border-yellow-500 hover:border-yellow-400 transition-colors">
+                <h2 class="text-2xl font-bold mb-4 flex items-center text-white">
+                    <svg class="w-6 h-6 mr-3 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    預期效益
+                </h2>
+                <ul class="space-y-3 text-gray-300">
+                    <li class="flex items-start"><span class="text-yellow-500 mr-2">✦</span> <span><strong>活絡社群：</strong>帶動伺服器戰場與狼獄氣氛，增加排隊熱度。</span></li>
+                    <li class="flex items-start"><span class="text-yellow-500 mr-2">✦</span> <span><strong>凝聚向心力：</strong>大幅提升主辦/協辦群組之知名度與玩家向心力。</span></li>
+                    <li class="flex items-start"><span class="text-yellow-500 mr-2">✦</span> <span><strong>關鍵指標：</strong>達成六組隊伍（滿組）參賽之報名目標。</span></li>
+                </ul>
+            </section>
+        </div>
+
+        <!-- Section 3: 活動總覽 -->
+        <section class="glass-panel p-8 rounded-xl">
+            <h2 class="text-2xl font-bold mb-6 flex items-center text-white border-b border-gray-700 pb-3">
+                <svg class="w-6 h-6 mr-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                活動總覽
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 text-gray-300">
+                <div class="bg-gray-800/50 p-4 rounded-lg"><span class="block text-sm text-gray-500 mb-1">活動名稱</span> <strong class="text-lg text-white">第一屆繁中服水晶衝突社群賽</strong></div>
+                <div class="bg-gray-800/50 p-4 rounded-lg"><span class="block text-sm text-gray-500 mb-1">活動日期</span> <strong class="text-lg text-yellow-400">◆ 賽事檔期籌備與協調中 ◆</strong></div>
+                <div class="bg-gray-800/50 p-4 rounded-lg"><span class="block text-sm text-gray-500 mb-1">主辦單位</span> <strong class="text-lg text-white">愛輔愛輔學習平台十四代</strong></div>
+                <div class="bg-gray-800/50 p-4 rounded-lg"><span class="block text-sm text-gray-500 mb-1">指導單位</span> <strong class="text-lg text-white">FFXIV 水晶十人委員會</strong></div>
+                <div class="bg-gray-800/50 p-4 rounded-lg"><span class="block text-sm text-gray-500 mb-1">活動地點</span> <strong class="text-lg text-blue-300">利維坦伺服器：狼獄停船廠</strong></div>
+                <div class="bg-gray-800/50 p-4 rounded-lg"><span class="block text-sm text-gray-500 mb-1">活動對象</span> <strong class="text-lg text-white">熱愛 PvP 模式之玩家（不限排位）</strong></div>
+            </div>
+        </section>
+
+        <!-- Section 4: 賽事規則 -->
+        <section class="glass-panel p-8 rounded-xl">
+            <h2 class="text-2xl font-bold mb-6 flex items-center text-white border-b border-gray-700 pb-3">
+                <svg class="w-6 h-6 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                賽制與報名規範
+            </h2>
+            
+            <div class="space-y-8">
+                <!-- 報名與分組 -->
+                <div>
+                    <h3 class="text-xl font-bold text-red-400 mb-3">◆ 報名與分組機制</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-2 ml-2">
+                        <li><strong>報名費用：</strong>每隊 <span class="text-yellow-400 font-bold">25 萬 Gil</span>（全數納入賽事總獎金池）。</li>
+                        <li><strong>隊伍編制：</strong>賽事採 6 隊制，分為 A、B 兩組（每組 3 隊）。</li>
+                        <li><strong>人數限制：</strong>每隊最多登錄 6 名選手（含 1 名候補）。</li>
+                        <li><strong>職業限制：</strong>同一隊伍出戰時不可有重複職業（選手可於準備確認前自由切換職業）。</li>
+                    </ul>
+                </div>
+
+                <!-- 實力限制 -->
+                <div class="bg-gray-800/50 p-5 rounded-lg border border-gray-700">
+                    <h3 class="text-xl font-bold text-red-400 mb-3 flex justify-between items-center">
+                        <span>◆ 實力平衡限制（積分制）</span>
+                        <span class="text-sm bg-red-900/50 text-red-300 px-3 py-1 rounded-full border border-red-700">隊伍總分上限：16 分</span>
+                    </h3>
+                    <p class="text-sm text-gray-400 mb-4">為確保賽事精彩度並鼓勵新手參與，實施段位積分限制。若同時擁有國際服與繁中服帳號，以最高段位計算。</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-300">
+                            <thead class="text-xs text-gray-400 uppercase bg-gray-900">
+                                <tr>
+                                    <th class="px-4 py-3 rounded-tl-lg">排位等級</th>
+                                    <th class="px-4 py-3">對應積分</th>
+                                    <th class="px-4 py-3 rounded-tr-lg">備註</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="table-row-alt border-b border-gray-700/50">
+                                    <td class="px-4 py-3 font-medium text-white">青銅 / 未有排位</td>
+                                    <td class="px-4 py-3 text-yellow-500 font-bold">0 分</td>
+                                    <td class="px-4 py-3 text-gray-500">新手友善保障</td>
+                                </tr>
+                                <tr class="table-row-alt border-b border-gray-700/50">
+                                    <td class="px-4 py-3 font-medium text-white">銀牌 (Silver)</td>
+                                    <td class="px-4 py-3 text-yellow-500 font-bold">1 分</td>
+                                    <td class="px-4 py-3"></td>
+                                </tr>
+                                <tr class="table-row-alt border-b border-gray-700/50">
+                                    <td class="px-4 py-3 font-medium text-white">金牌 (Gold)</td>
+                                    <td class="px-4 py-3 text-yellow-500 font-bold">2 分</td>
+                                    <td class="px-4 py-3"></td>
+                                </tr>
+                                <tr class="table-row-alt border-b border-gray-700/50">
+                                    <td class="px-4 py-3 font-medium text-white">白金 (Platinum)</td>
+                                    <td class="px-4 py-3 text-yellow-500 font-bold">3 分</td>
+                                    <td class="px-4 py-3"></td>
+                                </tr>
+                                <tr class="table-row-alt border-b border-gray-700/50">
+                                    <td class="px-4 py-3 font-medium text-white">鑽石 (Diamond)</td>
+                                    <td class="px-4 py-3 text-yellow-500 font-bold">4 分</td>
+                                    <td class="px-4 py-3"></td>
+                                </tr>
+                                <tr class="table-row-alt border-b border-gray-700/50">
+                                    <td class="px-4 py-3 font-medium text-white text-purple-400">水晶 (Crystal)</td>
+                                    <td class="px-4 py-3 text-yellow-500 font-bold">5 分</td>
+                                    <td class="px-4 py-3"></td>
+                                </tr>
+                                <tr class="table-row-alt">
+                                    <td class="px-4 py-3 font-medium text-white text-yellow-300">歐米茄以上 (Top 100)</td>
+                                    <td class="px-4 py-3 text-red-500 font-bold">6 分</td>
+                                    <td class="px-4 py-3 text-gray-500">頂尖選手限制</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 賽制與獎勵 -->
+<!-- Section 5: 賽制圖解 (視覺化晉級路線) -->
+        <section class="glass-panel p-8 rounded-xl relative overflow-hidden mt-8">
+            <!-- 背景點綴 -->
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full opacity-5 pointer-events-none flex justify-center items-center">
+                <svg class="w-96 h-96 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+
+            <h2 class="text-2xl font-bold mb-8 flex items-center text-white border-b border-gray-700 pb-3 relative z-10">
+                <svg class="w-6 h-6 mr-3 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                賽制圖解：分組與晉級路線
+            </h2>
+
+            <div class="relative z-10 max-w-4xl mx-auto">
+                <!-- 頂部：兩組別 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
+                    <!-- A組 -->
+                    <div class="bg-gradient-to-b from-red-900/40 to-transparent p-6 rounded-xl border border-red-700/50 text-center relative">
+                        <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-red-600 text-white px-6 py-1 rounded-full font-bold shadow-lg border-2 border-[#0f1115]">
+                            A 組 (Group A)
+                        </div>
+                        <h4 class="text-red-400 font-bold mt-4 mb-2">單循環互打賽 (BO3)</h4>
+                        <p class="text-xs text-gray-400 mb-4">3支隊伍，每隊皆會與另外兩隊交手</p>
+                        <div class="flex justify-center items-center space-x-2 mb-2">
+                            <span class="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-600 font-mono">隊伍 1</span>
+                            <span class="text-red-500 font-bold">⚔️</span>
+                            <span class="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-600 font-mono">隊伍 2</span>
+                        </div>
+                        <div class="flex justify-center items-center space-x-2">
+                            <span class="text-red-500 font-bold">⚔️</span>
+                            <span class="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-600 font-mono">隊伍 3</span>
+                            <span class="text-red-500 font-bold">⚔️</span>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-red-800/50">
+                            <span class="text-white font-bold block">🏅 A組 戰績第一名</span>
+                            <span class="text-xs text-gray-400">取得總決賽門票</span>
+                        </div>
+                    </div>
+
+                    <!-- B組 -->
+                    <div class="bg-gradient-to-b from-blue-900/40 to-transparent p-6 rounded-xl border border-blue-700/50 text-center relative">
+                        <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-6 py-1 rounded-full font-bold shadow-lg border-2 border-[#0f1115]">
+                            B 組 (Group B)
+                        </div>
+                        <h4 class="text-blue-400 font-bold mt-4 mb-2">單循環互打賽 (BO3)</h4>
+                        <p class="text-xs text-gray-400 mb-4">3支隊伍，每隊皆會與另外兩隊交手</p>
+                        <div class="flex justify-center items-center space-x-2 mb-2">
+                            <span class="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-600 font-mono">隊伍 4</span>
+                            <span class="text-blue-500 font-bold">⚔️</span>
+                            <span class="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-600 font-mono">隊伍 5</span>
+                        </div>
+                        <div class="flex justify-center items-center space-x-2">
+                            <span class="text-blue-500 font-bold">⚔️</span>
+                            <span class="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-600 font-mono">隊伍 6</span>
+                            <span class="text-blue-500 font-bold">⚔️</span>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-blue-800/50">
+                            <span class="text-white font-bold block">🏅 B組 戰績第一名</span>
+                            <span class="text-xs text-gray-400">取得總決賽門票</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 中間箭頭 -->
+                <div class="flex justify-center items-center my-6 relative h-16 hidden md:flex">
+                    <!-- 左箭頭 -->
+                    <div class="absolute left-1/4 top-0 w-1/2 h-full">
+                        <svg class="w-full h-full text-gray-600" preserveAspectRatio="none" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M 0,0 C 0,50 50,50 50,100" />
+                        </svg>
+                    </div>
+                    <!-- 右箭頭 -->
+                    <div class="absolute right-1/4 top-0 w-1/2 h-full">
+                        <svg class="w-full h-full text-gray-600" preserveAspectRatio="none" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M 100,0 C 100,50 50,50 50,100" />
+                        </svg>
+                    </div>
+                    <div class="absolute bottom-0 w-4 h-4 bg-yellow-500 rotate-45 border-r-2 border-b-2 border-yellow-300"></div>
+                </div>
+                <!-- 手機板簡單箭頭 -->
+                <div class="flex justify-center text-gray-500 my-4 md:hidden">
+                    <svg class="w-8 h-8 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                </div>
+
+                <!-- 總決賽區塊 -->
+                <div class="bg-gradient-to-r from-yellow-900/60 via-yellow-600/40 to-yellow-900/60 p-1 rounded-xl shadow-[0_0_30px_rgba(234,179,8,0.15)] mx-auto max-w-lg">
+                    <div class="bg-[#0f1115]/90 px-8 py-6 rounded-lg text-center backdrop-blur-sm">
+                        <span class="text-yellow-500 font-bold tracking-widest text-sm mb-1 block">GRAND FINAL</span>
+                        <h3 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500 mb-2">
+                            🏆 冠軍決定戰
+                        </h3>
+                        <div class="flex justify-center items-center space-x-4 mt-4">
+                            <div class="text-center">
+                                <span class="block text-red-400 font-bold text-lg">A組 冠軍</span>
+                            </div>
+                            <div class="text-2xl font-black text-gray-500 italic">VS</div>
+                            <div class="text-center">
+                                <span class="block text-blue-400 font-bold text-lg">B組 冠軍</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 inline-block bg-yellow-900/50 text-yellow-300 px-4 py-1 rounded border border-yellow-700/50 text-sm font-bold">
+                            最高榮譽：五戰三勝制 (BO5)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-red-400 mb-3">◆ 賽制與地圖規則</h3>
+                        <ul class="list-disc list-inside text-gray-300 space-y-2 ml-2">
+                            <li><strong>小組賽：</strong>採 <span class="text-white font-bold">BO3</span>（三戰兩勝制）。</li>
+                            <li><strong>冠軍決賽：</strong>由兩組第一競爭，採 <span class="text-red-400 font-bold">BO5</span>（五戰三勝制）。</li>
+                            <li><strong>選圖機制：</strong>首局地圖由系統/大會抽籤決定，後續局數由上一局之敗方選擇。</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gradient-to-br from-yellow-900/40 to-yellow-600/10 p-5 rounded-lg border border-yellow-700/50">
+                        <h3 class="text-xl font-bold text-yellow-500 mb-3 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            賽事獎金池
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center border-b border-yellow-700/30 pb-2">
+                                <span class="text-yellow-400 font-bold text-lg">👑 冠軍 (1st)</span>
+                                <span class="text-white font-bold text-xl">1,000,000 Gil</span>
+                            </div>
+                            <div class="flex justify-between items-center border-b border-yellow-700/30 pb-2">
+                                <span class="text-gray-300 font-bold text-lg">🥈 亞軍 (2nd)</span>
+                                <span class="text-white font-bold text-xl">500,000 Gil</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: 活動流程 -->
+        <section class="glass-panel p-8 rounded-xl relative overflow-hidden">
+            <!-- Decorative background element -->
+            <div class="absolute right-0 top-0 w-64 h-64 bg-red-600/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+            
+            <h2 class="text-2xl font-bold mb-8 flex items-center text-white border-b border-gray-700 pb-3 relative z-10">
+                <svg class="w-6 h-6 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                賽事時程表（當日流程規劃）
+            </h2>
+            
+            <div class="relative border-l-2 border-red-900 ml-3 md:ml-6 space-y-6 z-10">
+                
+                <!-- 開場 -->
+                <div class="relative pl-6">
+                    <div class="absolute w-4 h-4 bg-red-500 rounded-full -left-[9px] top-1 border-4 border-[#0f1115]"></div>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between">
+                        <h4 class="text-lg font-bold text-white">開場與抽籤</h4>
+                        <span class="text-red-400 font-mono text-sm bg-red-900/30 px-2 py-1 rounded">19:00 - 19:40</span>
+                    </div>
+                    <p class="text-sm text-gray-400 mt-1">模式簡介、賽事規則重申、分組與首局地圖抽籤儀式。</p>
+                </div>
+
+                <!-- A組賽事 -->
+                <div class="relative pl-6">
+                    <div class="absolute w-3 h-3 bg-gray-500 rounded-full -left-[7px] top-1.5 border-2 border-[#0f1115]"></div>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between">
+                        <h4 class="text-md font-bold text-gray-200">A 組 小組賽 (BO3)</h4>
+                        <span class="text-gray-400 font-mono text-sm">19:40 - 21:00</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-1">包含三局對戰與局間休息、地圖抽籤/選擇。20:50 進行 A 組結算。</p>
+                </div>
+
+                <!-- B組賽事 -->
+                <div class="relative pl-6">
+                    <div class="absolute w-3 h-3 bg-gray-500 rounded-full -left-[7px] top-1.5 border-2 border-[#0f1115]"></div>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between">
+                        <h4 class="text-md font-bold text-gray-200">B 組 小組賽 (BO3)</h4>
+                        <span class="text-gray-400 font-mono text-sm">21:00 - 22:10</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-1">包含三局對戰與局間休息、地圖抽籤/選擇。</p>
+                </div>
+
+                <!-- 戰術準備 -->
+                <div class="relative pl-6">
+                    <div class="absolute w-3 h-3 bg-blue-500 rounded-full -left-[7px] top-1.5 border-2 border-[#0f1115]"></div>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between">
+                        <h4 class="text-md font-bold text-blue-300">晉級隊伍戰術討論</h4>
+                        <span class="text-blue-400 font-mono text-sm bg-blue-900/30 px-2 py-1 rounded">22:10 - 22:30</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-1">為總決賽做準備，主播賽評進行戰況分析與預測。</p>
+                </div>
+
+                <!-- 冠軍戰 -->
+                <div class="relative pl-6">
+                    <div class="absolute w-5 h-5 bg-yellow-500 rounded-full -left-[11px] top-0.5 border-4 border-[#0f1115] shadow-[0_0_10px_rgba(234,179,8,0.8)]"></div>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between">
+                        <h4 class="text-xl font-black text-yellow-400">🏆 冠軍決定戰 (BO5)</h4>
+                        <span class="text-yellow-400 font-mono text-sm bg-yellow-900/30 px-2 py-1 rounded border border-yellow-700/50">22:30 - 23:00</span>
+                    </div>
+                    <p class="text-sm text-gray-300 mt-1">決定首屆繁中服霸主的最終決戰！</p>
+                </div>
+
+                <!-- 結尾 -->
+                <div class="relative pl-6 pb-2">
+                    <div class="absolute w-4 h-4 bg-green-500 rounded-full -left-[9px] top-1 border-4 border-[#0f1115]"></div>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between">
+                        <h4 class="text-lg font-bold text-white">頒獎儀式與大合照</h4>
+                        <span class="text-green-400 font-mono text-sm">23:00 - 23:15</span>
+                    </div>
+                    <p class="text-sm text-gray-400 mt-2 p-3 bg-gray-800/80 rounded border-l-2 border-green-500">
+                        <strong class="text-white">【特別企劃】社群交流表演賽 (23:15 - 23:35)</strong><br>
+                        由冠亞軍隊伍代表與主辦方/觀眾/特邀來賓進行趣味表演賽，完美收官。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7 & 8: 後勤與轉播 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <section class="glass-panel p-8 rounded-xl">
+                <h2 class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2">🛡️ 賽事編制與硬體需求</h2>
+                
+                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2 mt-4">人力編制需求</h3>
+                <div class="space-y-2 mb-6">
+                    <div class="flex items-center justify-between bg-gray-800/50 p-2 rounded border border-gray-700">
+                        <span class="text-gray-300">賽事主播 / 賽評</span>
+                    </div>
+                    <div class="flex items-center justify-between bg-gray-800/50 p-2 rounded border border-gray-700">
+                        <span class="text-gray-300">賽事裁判 / 秩序維護</span>
+                    </div>
+                    <div class="flex items-center justify-between bg-gray-800/50 p-2 rounded border border-gray-700">
+                        <span class="text-gray-300">賽事導播 / 畫面錄製</span>
+                    </div>
+                </div>
+
+                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">系統與軟體設施</h3>
+                <ul class="text-sm text-gray-400 space-y-2 list-disc list-inside ml-1">
+                    <li>遊戲內功能：自定義房間 (Custom Match)</li>
+                    <li>辨識工具：強制規範顯示冒險者名牌/隊伍名牌</li>
+                    <li>通訊平台：賽事專屬 Discord 語音與文字頻道</li>
+                    <li>報名系統：Google 表單與社群專頁公告</li>
+                    <li>轉播軟體：OBS Studio 與專業麥克風設備</li>
+                </ul>
+            </section>
+
+            <section class="glass-panel p-8 rounded-xl border-t-4 border-blue-500">
+                <h2 class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2">📡 行銷轉播策略</h2>
+                
+                <div class="mb-5">
+                    <h3 class="text-md font-bold text-blue-400 mb-2">核心直播平台：YouTube</h3>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        考量到賽後推廣與影片留存，本次賽事將以 YouTube 為主要直播陣地。其演算法有助於觸及 FF14 圈外的潛在觀眾，且方便選手賽後回放檢討（VOD）。
+                    </p>
+                </div>
+
+                <div class="space-y-3">
+                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider">階段性推廣計畫</h3>
+                    <div class="bg-gray-800/50 p-3 rounded border-l-2 border-blue-400">
+                        <strong class="text-white text-sm">1. 賽前預熱 (Pre-Event)</strong>
+                        <p class="text-xs text-gray-400 mt-1">發布精美賽事視覺海報至 FB社團、巴哈姆特、PTT 等各大社群；安排主播進行「水晶衝突觀念教學」實況以建立話題。</p>
+                    </div>
+                    <div class="bg-gray-800/50 p-3 rounded border-l-2 border-yellow-400">
+                        <strong class="text-white text-sm">2. 抽籤儀式 (Draw Ceremony)</strong>
+                        <p class="text-xs text-gray-400 mt-1">舉辦「分組地圖抽籤直播」，建立賽事公平性與儀式感，提前炒熱氣氛。</p>
+                    </div>
+                    <div class="bg-gray-800/50 p-3 rounded border-l-2 border-red-400">
+                        <strong class="text-white text-sm">3. 賽後行銷 (Post-Event)</strong>
+                        <p class="text-xs text-gray-400 mt-1">剪輯精華短片 (Highlights/Shorts) 發布，延長賽事長尾效應，為下一屆賽事鋪路。</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 border-t border-gray-800 bg-[#0a0b0d] py-8 text-center text-sm text-gray-600">
+        <p>本企劃書為機密文件，僅供內部審核與贊助商評估使用。</p>
+        <p class="mt-2">© 2026 愛輔愛輔學習平台十四代. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
+
