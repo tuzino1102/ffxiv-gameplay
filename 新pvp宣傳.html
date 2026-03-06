@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="scroll-smooth bg-[#0a0d14]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【報名中】第一屆繁中服水晶衝突社群賽</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&family=Teko:wght@500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                        esports: ['"Teko"', 'sans-serif'],
+                    },
+                    colors: {
+                        cc: {
+                            bg: '#0a0d14',
+                            red: '#ef4444',
+                            blue: '#3b82f6',
+                            gold: '#fbbf24',
+                            purple: '#8b5cf6',
+                            surface: '#151a27'
+                        }
+                    },
+                    animation: {
+                        'glow-pulse': 'glow 4s ease-in-out infinite alternate',
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 6s ease-in-out infinite -3s',
+                        'bounce-subtle': 'bounce-subtle 2s infinite',
+                    },
+                    keyframes: {
+                        glow: {
+                            '0%': { opacity: '0.4', transform: 'scale(0.95)' },
+                            '100%': { opacity: '0.8', transform: 'scale(1.05)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' }
+                        },
+                        'bounce-subtle': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            /* 玻璃擬物質感 */
+            .glass-card {
+                background: rgba(21, 26, 39, 0.65);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            }
+
+            /* 修正版：電競傾斜按鈕與文字反向傾斜 */
+            .btn-skew {
+                transform: skewX(-12deg);
+            }
+            .btn-skew-content {
+                transform: skewX(12deg);
+                display: inline-block;
+            }
+
+            /* 文字霓虹發光 */
+            .text-neon-title {
+                text-shadow: 0 0 20px rgba(255,255,255,0.2), 0 0 40px rgba(239, 68, 68, 0.5), 0 0 80px rgba(59, 130, 246, 0.5);
+            }
+
+            /* 電競按鈕漸層 */
+            .bg-esports-gradient {
+                background: linear-gradient(45deg, #ef4444, #8b5cf6, #3b82f6);
+                background-size: 200% auto;
+                transition: 0.5s;
+            }
+            .bg-esports-gradient:hover {
+                background-position: right center;
+                box-shadow: 0 0 30px rgba(139, 92, 246, 0.8);
+            }
+
+            /* 隱藏橫向卷軸但保留滑動功能 */
+            .no-scrollbar::-webkit-scrollbar {
+                display: none;
+            }
+            .no-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+        }
+        
+        body {
+            background-color: #0a0d14;
+            color: #e2e8f0;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(239, 68, 68, 0.12) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0d14; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ef4444; }
+    </style>
+</head>
+<body class="antialiased selection:bg-cc-red selection:text-white bg-[#0a0d14] text-slate-200">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 glass-card border-b-0 border-white/5 py-3">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div class="font-esports text-2xl tracking-widest font-bold text-white flex items-center gap-2">
+                <div class="w-4 h-4 bg-gradient-to-br from-cc-red to-cc-blue transform rotate-45 shadow-[0_0_10px_rgba(239,68,68,0.8)]"></div>
+                CCCT <span class="text-gray-500 text-sm font-sans hidden sm:inline tracking-normal">水晶衝突社群賽</span>
+            </div>
+            <div class="hidden lg:flex space-x-6 lg:space-x-8 text-sm font-bold text-gray-300 tracking-wider">
+                <a href="#about" class="hover:text-white hover:text-shadow transition-colors">賽事資訊</a>
+                <a href="#rules" class="hover:text-white hover:text-shadow transition-colors">賽制與規則</a>
+                <a href="#schedule" class="hover:text-white hover:text-shadow transition-colors">賽程時間</a>
+                <a href="#how-to-play" class="hover:text-white hover:text-shadow transition-colors text-cc-gold">新手玩法</a>
+            </div>
+            <a href="#register" class="bg-white/10 hover:bg-white/20 text-white px-6 py-2 rounded-full text-sm font-bold border border-white/10 transition-all shadow-lg hover:shadow-white/20">
+                前往報名
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative min-h-screen flex flex-col items-center justify-center pt-24 pb-20 overflow-hidden">
+        
+        <!-- 動態漂浮發光水晶球特效 -->
+        <div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
+            <div class="absolute w-[600px] h-[600px] bg-gradient-to-r from-cc-red/20 via-cc-purple/20 to-cc-blue/20 rounded-full blur-[80px] animate-glow-pulse"></div>
+            <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-cc-red/30 rounded-full blur-[60px] animate-float mix-blend-screen"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-cc-blue/20 rounded-full blur-[70px] animate-float-delayed mix-blend-screen"></div>
+        </div>
+
+        <div class="relative z-10 w-full max-w-7xl mx-auto px-4 flex flex-col items-center text-center flex-grow justify-center">
+            
+            <!-- 活動日期標籤 -->
+            <div class="mb-6 inline-flex items-center space-x-3 px-5 py-2 rounded-full glass-card border-cc-red/50 shadow-[0_0_20px_rgba(239,68,68,0.3)]">
+                <span class="w-2.5 h-2.5 bg-cc-red rounded-full animate-pulse shadow-[0_0_10px_#ef4444]"></span>
+                <span class="text-sm md:text-base font-black tracking-widest text-white">4 月 3 日 <span class="text-gray-400 mx-1">|</span> 決戰狼獄</span>
+            </div>
+
+            <h2 class="text-cc-gold font-bold tracking-widest text-xl md:text-2xl mb-4 drop-shadow-[0_0_10px_rgba(251,191,36,0.8)]">第一屆繁中服</h2>
+            
+            <h1 class="text-6xl md:text-8xl lg:text-[7.5rem] font-black mb-6 tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cc-red via-white to-cc-blue text-neon-title font-sans">
+                水晶衝突社群賽
+            </h1>
+
+            <p class="text-lg md:text-2xl text-gray-400 font-light mb-10 max-w-3xl mx-auto leading-relaxed">
+                「水晶之下，人人平等」<br>
+                不僅是水晶的推動者，更是社群的開創者 —— 參與，即是榮耀。
+            </p>
+
+            <!-- 修正版：傾斜按鈕區塊 -->
+            <div class="flex flex-col md:flex-row gap-5 w-full md:w-auto px-4">
+                <!-- 報名按鈕 -->
+                <a href="#register" class="btn-skew bg-esports-gradient px-10 py-4 shadow-2xl group w-full md:w-auto border border-white/20">
+                    <span class="btn-skew-content text-xl md:text-2xl font-black text-white uppercase tracking-widest block w-full text-center drop-shadow-md">
+                        領取報名表單
+                    </span>
+                </a>
+                
+                <!-- 新手教學按鈕 -->
+                <a href="#how-to-play" class="btn-skew px-10 py-4 border-2 border-white/20 bg-white/5 hover:bg-white/15 hover:border-cc-gold/50 transition-all backdrop-blur-sm group w-full md:w-auto">
+                    <span class="btn-skew-content text-xl font-bold text-cc-gold block w-full text-center drop-shadow-md">
+                        我是新手：五分鐘看懂玩法
+                    </span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 修正版：向下滾動提示箭頭 (確保在底部且不重疊) -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+            <a href="#about" class="flex flex-col items-center justify-center text-gray-400 hover:text-white transition-colors animate-bounce-subtle">
+                <span class="text-xs font-bold tracking-[0.2em] mb-2">SCROLL</span>
+                <svg class="w-6 h-6 drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+            </a>
+        </div>
+    </header>
+
+    <!-- Quick Info Bar (加入了活動日期) -->
+    <div class="border-y border-white/10 bg-[#05070a]/80 backdrop-blur-xl relative z-20 shadow-[0_0_30px_rgba(0,0,0,0.8)]" id="about">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center divide-x divide-white/10">
+                <!-- 更新：新增日期區塊 -->
+                <div>
+                    <p class="text-xs text-gray-500 font-bold tracking-widest uppercase mb-2">賽事日期</p>
+                    <p class="text-sm md:text-lg font-black text-cc-red drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]">4 月 3 日 19:00</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 font-bold tracking-widest uppercase mb-2">賽事地點</p>
+                    <p class="text-sm md:text-lg font-bold text-cc-blue drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]">利維坦伺服器：狼獄</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 font-bold tracking-widest uppercase mb-2">參賽對象</p>
+                    <p class="text-sm md:text-lg font-bold text-cc-gold drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]">繁中服全體玩家</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 font-bold tracking-widest uppercase mb-2">主辦單位</p>
+                    <p class="text-sm md:text-lg font-bold text-white drop-shadow-md">愛輔愛輔學習平台</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-32 relative z-10">
+
+        <!-- Prize Section -->
+        <section id="prizes" class="relative">
+            <div class="text-center mb-16">
+                <h2 class="font-esports text-5xl md:text-7xl font-bold text-white mb-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">PRIZE POOL</h2>
+                <h3 class="text-2xl md:text-3xl font-bold text-gray-300">總獎金池高達 1,500,000 Gil</h3>
+                <div class="w-32 h-1 bg-gradient-to-r from-transparent via-cc-gold to-transparent mx-auto mt-8"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="glass-card p-1 rounded-2xl relative overflow-hidden group hover:-translate-y-2 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-gradient-to-br from-yellow-500/30 to-orange-600/30 opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="bg-cc-surface/90 p-8 rounded-xl h-full flex flex-col items-center text-center border border-yellow-500/40 relative z-10">
+                        <div class="w-24 h-24 bg-gradient-to-br from-yellow-300 to-yellow-600 rounded-full flex items-center justify-center text-5xl shadow-[0_0_40px_rgba(234,179,8,0.6)] mb-6 clip-crystal border-2 border-yellow-200">🏆</div>
+                        <h4 class="text-gray-300 font-bold tracking-[0.2em] mb-3 text-lg">冠軍 CHAMPION</h4>
+                        <div class="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500 mb-2 drop-shadow-lg">1,000,000</div>
+                        <p class="text-yellow-500 font-black tracking-widest text-xl">Gil</p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-1 rounded-2xl relative overflow-hidden group hover:-translate-y-2 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-gradient-to-br from-gray-400/20 to-gray-600/20 opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="bg-cc-surface/90 p-8 rounded-xl h-full flex flex-col items-center text-center border border-gray-500/40 relative z-10">
+                        <div class="w-24 h-24 bg-gradient-to-br from-gray-300 to-gray-500 rounded-full flex items-center justify-center text-5xl shadow-[0_0_30px_rgba(156,163,175,0.4)] mb-6 clip-crystal border-2 border-gray-200">🥈</div>
+                        <h4 class="text-gray-300 font-bold tracking-[0.2em] mb-3 text-lg">亞軍 RUNNER-UP</h4>
+                        <div class="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-300 to-gray-500 mb-2 drop-shadow-lg">500,000</div>
+                        <p class="text-gray-400 font-black tracking-widest text-xl">Gil</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rules & Format Section -->
+        <section id="rules">
+            <div class="flex flex-col md:flex-row items-end justify-between mb-12 border-b border-white/10 pb-6">
+                <div>
+                    <h2 class="font-esports text-5xl md:text-6xl font-bold text-white drop-shadow-md">TOURNAMENT RULES</h2>
+                    <h3 class="text-2xl font-bold text-cc-gold mt-2">賽制與隊伍規範</h3>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Left Column: General Rules -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="glass-card p-8 rounded-2xl border-l-4 border-cc-red shadow-[0_0_20px_rgba(239,68,68,0.1)]">
+                        <h4 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                            <span class="bg-cc-red/20 text-cc-red p-3 rounded-lg border border-cc-red/30">📋</span> 報名資訊
+                        </h4>
+                        <ul class="space-y-5 text-gray-300 text-lg">
+                            <li class="flex items-start"><span class="text-cc-red mr-3 mt-1 text-xl">▸</span> <div><strong>報名費用：</strong>每隊 25 萬 Gil <br><span class="text-sm text-gray-500">(全額納入獎金池)</span></div></li>
+                            <li class="flex items-start"><span class="text-cc-red mr-3 mt-1 text-xl">▸</span> <div><strong>隊伍人數：</strong>共招募 6 隊。每隊最多 6 人 (含 1 名候補)。</div></li>
+                            <li class="flex items-start"><span class="text-cc-red mr-3 mt-1 text-xl">▸</span> <div><strong>職業限制：</strong>同隊伍出戰不可有重複職業。(進場前可自由切換)</div></li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card p-8 rounded-2xl border-l-4 border-cc-purple shadow-[0_0_20px_rgba(139,92,246,0.1)]">
+                        <h4 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                            <span class="bg-cc-purple/20 text-cc-purple p-3 rounded-lg border border-cc-purple/30">⚔️</span> 賽事賽制
+                        </h4>
+                        <ul class="space-y-5 text-gray-300 text-lg">
+                            <li class="flex items-start"><span class="text-cc-purple mr-3 mt-1 text-xl">▸</span> <div><strong>預賽 (小組賽)：</strong>分為 A、B 兩組，進行單循環賽。採 <span class="text-white font-bold bg-white/10 px-2 py-0.5 rounded shadow-inner">BO3</span> (三戰兩勝制)。</div></li>
+                            <li class="flex items-start"><span class="text-cc-purple mr-3 mt-1 text-xl">▸</span> <div><strong>總決賽：</strong>由 A、B 組戰績第一名隊伍晉級。採 <span class="text-cc-gold font-bold bg-cc-gold/10 px-2 py-0.5 rounded border border-cc-gold/30 shadow-[0_0_10px_rgba(251,191,36,0.2)]">BO5</span> (五戰三勝制)。</div></li>
+                            <li class="flex items-start"><span class="text-cc-purple mr-3 mt-1 text-xl">▸</span> <div><strong>選圖機制：</strong>首局地圖抽籤決定，後續局數由上一局敗者選圖。</div></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Right Column: Point System -->
+                <div class="lg:col-span-7">
+                    <div class="glass-card p-8 rounded-2xl h-full relative overflow-hidden border border-cc-blue/20 shadow-[0_0_30px_rgba(59,130,246,0.15)]">
+                        <div class="absolute top-0 right-0 w-80 h-80 bg-cc-blue/10 rounded-full blur-[80px] -mr-20 -mt-20"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="flex flex-col sm:flex-row justify-between items-start mb-8 gap-4">
+                                <div>
+                                    <h4 class="text-2xl font-bold text-white flex items-center gap-3 mb-3">
+                                        <span class="bg-cc-blue/20 text-cc-blue p-3 rounded-lg border border-cc-blue/30">⚖️</span> 實力平衡機制 (積分制)
+                                    </h4>
+                                    <p class="text-base text-gray-400">為保護新手體驗，隊伍組成設有段位積分上限。若同時擁有國際服與繁中服帳號，以最高段位計算。</p>
+                                </div>
+                                <div class="bg-[#1a0f14] border border-cc-red/60 px-6 py-3 rounded-xl text-center shrink-0 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                                    <span class="block text-sm text-cc-red font-bold uppercase tracking-widest mb-1">全隊總分上限</span>
+                                    <span class="block text-4xl font-black text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">16 分</span>
+                                </div>
+                            </div>
+
+                            <div class="overflow-x-auto rounded-xl border border-white/10 bg-black/40">
+                                <table class="w-full text-base text-left text-gray-300">
+                                    <thead class="text-sm text-gray-400 uppercase bg-black/60 border-b border-white/10">
+                                        <tr>
+                                            <th class="px-6 py-5">排位等級 (Rank)</th>
+                                            <th class="px-6 py-5 text-center">對應積分</th>
+                                            <th class="px-6 py-5">備註</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-white/5">
+                                        <tr class="hover:bg-white/5 transition-colors">
+                                            <td class="px-6 py-4 font-bold text-white flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-orange-700"></span>青銅 / 未打排位</td>
+                                            <td class="px-6 py-4 text-center text-cc-blue font-black text-xl">0</td>
+                                            <td class="px-6 py-4 text-gray-500 text-sm">新手絕對友善</td>
+                                        </tr>
+                                        <tr class="hover:bg-white/5 transition-colors">
+                                            <td class="px-6 py-4 font-bold text-gray-300 flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gray-400"></span>銀牌 Silver</td>
+                                            <td class="px-6 py-4 text-center font-bold text-xl">1</td>
+                                            <td class="px-6 py-4"></td>
+                                        </tr>
+                                        <tr class="hover:bg-white/5 transition-colors">
+                                            <td class="px-6 py-4 font-bold text-yellow-500 flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-yellow-500 shadow-[0_0_5px_#eab308]"></span>金牌 Gold</td>
+                                            <td class="px-6 py-4 text-center font-bold text-xl">2</td>
+                                            <td class="px-6 py-4"></td>
+                                        </tr>
+                                        <tr class="hover:bg-white/5 transition-colors">
+                                            <td class="px-6 py-4 font-bold text-teal-300 flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-teal-300 shadow-[0_0_5px_#5eead4]"></span>白金 Platinum</td>
+                                            <td class="px-6 py-4 text-center font-bold text-xl">3</td>
+                                            <td class="px-6 py-4"></td>
+                                        </tr>
+                                        <tr class="hover:bg-white/5 transition-colors">
+                                            <td class="px-6 py-4 font-bold text-blue-400 flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-blue-400 shadow-[0_0_5px_#60a5fa]"></span>鑽石 Diamond</td>
+                                            <td class="px-6 py-4 text-center font-bold text-xl">4</td>
+                                            <td class="px-6 py-4"></td>
+                                        </tr>
+                                        <tr class="hover:bg-white/5 transition-colors bg-cc-purple/10">
+                                            <td class="px-6 py-4 font-black text-purple-400 text-lg flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-purple-400 shadow-[0_0_8px_#c084fc] animate-pulse"></span>水晶 Crystal</td>
+                                            <td class="px-6 py-4 text-center text-purple-400 font-black text-2xl drop-shadow-[0_0_5px_rgba(192,132,252,0.8)]">5</td>
+                                            <td class="px-6 py-4 text-purple-300/70 text-sm">高階戰力</td>
+                                        </tr>
+                                        <tr class="hover:bg-white/5 transition-colors bg-cc-red/10 border-t border-cc-red/30">
+                                            <td class="px-6 py-5 font-black text-cc-red text-lg flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-cc-red shadow-[0_0_8px_#ef4444] animate-pulse"></span>歐米茄以上 Top 100+</td>
+                                            <td class="px-6 py-5 text-center text-cc-red font-black text-3xl drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]">6</td>
+                                            <td class="px-6 py-5 text-cc-red/80 text-sm font-bold tracking-widest">頂尖選手限制</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p class="mt-5 text-sm text-gray-500 text-center font-bold tracking-wider">* 即使滿編 6 人 (含候補)，全隊總分仍不可超過 16 分。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tournament Schedule Section -->
+        <section id="schedule" class="pt-10">
+            <div class="flex flex-col md:flex-row items-end justify-between mb-12 border-b border-white/10 pb-6">
+                <div>
+                    <h2 class="font-esports text-5xl md:text-6xl font-bold text-white drop-shadow-md">EVENT SCHEDULE</h2>
+                    <h3 class="text-2xl font-bold text-cc-gold mt-2 flex items-center gap-3">
+                        賽程時間表 <span class="text-sm font-mono text-cc-red bg-cc-red/10 px-2 py-1 rounded border border-cc-red/30">4/3 (五)</span>
+                    </h3>
+                </div>
+            </div>
+
+            <div class="max-w-5xl mx-auto">
+                <div class="glass-card rounded-3xl p-6 md:p-10 border border-white/5 relative overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+                    <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-cc-purple/10 rounded-full blur-[80px] pointer-events-none opacity-50"></div>
+                    
+                    <div class="relative z-10">
+                        <!-- 開場 -->
+                        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 py-4 mb-6 bg-white/5 rounded-xl border border-white/10">
+                            <span class="text-cc-gold font-mono font-bold text-xl">19:00 - 19:40</span>
+                            <span class="hidden sm:inline text-white/20">|</span>
+                            <span class="text-white font-bold tracking-widest">模式簡介與分組 / 地圖抽籤</span>
+                        </div>
+
+                        <!-- 雙欄分組賽程 -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <!-- A組 (紅) -->
+                            <div class="space-y-3">
+                                <div class="bg-gradient-to-r from-cc-red/20 to-transparent p-2 rounded-lg border-l-4 border-cc-red mb-4">
+                                    <h4 class="text-white font-black tracking-widest text-center">Group A 預賽 (BO3)</h4>
+                                </div>
+                                <div class="flex items-center gap-4 bg-black/40 p-3 rounded border border-white/5 hover:bg-white/5 transition-colors">
+                                    <span class="text-gray-400 font-mono text-sm shrink-0">19:40</span>
+                                    <div class="w-full flex justify-between items-center"><span class="font-bold text-cc-red/90 text-sm">第一場對戰</span></div>
+                                </div>
+                                <div class="flex items-center gap-4 bg-black/40 p-3 rounded border border-white/5 hover:bg-white/5 transition-colors">
+                                    <span class="text-gray-400 font-mono text-sm shrink-0">20:05</span>
+                                    <div class="w-full flex justify-between items-center"><span class="font-bold text-cc-red/90 text-sm">第二場對戰</span></div>
+                                </div>
+                                <div class="flex items-center gap-4 bg-black/40 p-3 rounded border border-white/5 hover:bg-white/5 transition-colors">
+                                    <span class="text-gray-400 font-mono text-sm shrink-0">20:30</span>
+                                    <div class="w-full flex justify-between items-center"><span class="font-bold text-cc-red/90 text-sm">第三場對戰</span></div>
+                                </div>
+                            </div>
+
+                            <!-- B組 (藍) -->
+                            <div class="space-y-3">
+                                <div class="bg-gradient-to-r from-cc-blue/20 to-transparent p-2 rounded-lg border-l-4 border-cc-blue mb-4">
+                                    <h4 class="text-white font-black tracking-widest text-center">Group B 預賽 (BO3)</h4>
+                                </div>
+                                <div class="flex items-center gap-4 bg-black/40 p-3 rounded border border-white/5 hover:bg-white/5 transition-colors">
+                                    <span class="text-gray-400 font-mono text-sm shrink-0">21:00</span>
+                                    <div class="w-full flex justify-between items-center"><span class="font-bold text-cc-blue/90 text-sm">第一場對戰</span></div>
+                                </div>
+                                <div class="flex items-center gap-4 bg-black/40 p-3 rounded border border-white/5 hover:bg-white/5 transition-colors">
+                                    <span class="text-gray-400 font-mono text-sm shrink-0">21:25</span>
+                                    <div class="w-full flex justify-between items-center"><span class="font-bold text-cc-blue/90 text-sm">第二場對戰</span></div>
+                                </div>
+                                <div class="flex items-center gap-4 bg-black/40 p-3 rounded border border-white/5 hover:bg-white/5 transition-colors">
+                                    <span class="text-gray-400 font-mono text-sm shrink-0">21:50</span>
+                                    <div class="w-full flex justify-between items-center"><span class="font-bold text-cc-blue/90 text-sm">第三場對戰</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 戰術休息 & 總決賽 -->
+                        <div class="text-center py-3 mb-6 border-y border-white/5"><p class="text-sm text-gray-400"><span class="font-mono text-gray-500 mr-2">22:10</span> 休息 / 總決賽戰術討論</p></div>
+                        <div class="flex flex-col sm:flex-row items-center justify-center gap-6 py-6 bg-gradient-to-r from-transparent via-cc-gold/20 to-transparent rounded-xl border-y border-cc-gold/30 shadow-[inset_0_0_20px_rgba(251,191,36,0.1)]">
+                            <span class="text-cc-gold font-mono font-black text-2xl drop-shadow-md">22:30</span>
+                            <div class="flex items-center gap-3"><span class="text-3xl animate-pulse">🏆</span> <span class="font-black text-white text-xl md:text-2xl tracking-widest drop-shadow-md">總冠軍決定戰 (BO5)</span></div>
+                        </div>
+                        <div class="text-center pt-6 mt-2"><p class="text-sm text-gray-300 font-bold"><span class="font-mono text-gray-500 mr-2">23:00</span> 頒獎典禮 / 賽後大合照 📸</p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HOW TO PLAY Section (橫向滑動區塊) -->
+        <section id="how-to-play" class="pt-16 pb-10">
+            <div class="flex flex-col md:flex-row items-end justify-between mb-8 border-b border-white/10 pb-6">
+                <div>
+                    <h2 class="font-esports text-5xl md:text-6xl font-bold text-white drop-shadow-md">HOW TO PLAY</h2>
+                    <h3 class="text-2xl font-bold text-cc-blue mt-2">五分鐘看懂水晶衝突</h3>
+                </div>
+                <div class="hidden md:flex gap-3">
+                    <button id="btn-left" class="w-12 h-12 rounded-full glass-card flex items-center justify-center hover:bg-white/20 transition-all border border-white/20 text-white font-bold text-xl">←</button>
+                    <button id="btn-right" class="w-12 h-12 rounded-full glass-card flex items-center justify-center hover:bg-white/20 transition-all border border-white/20 text-white font-bold text-xl">→</button>
+                </div>
+            </div>
+            
+            <p class="text-gray-400 mb-6 font-bold text-lg">沒玩過 PVP？別擔心！這是一個 5v5 的推車遊戲，跟著以下圖文快速了解獲勝關鍵。<br class="hidden md:block">可以<span class="text-cc-gold mx-1 font-black">左右滑動</span>查看更多！</p>
+
+            <!-- 橫向卷軸容器 -->
+            <div class="relative">
+                <div id="scroll-container" class="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-6 pb-8 items-stretch cursor-grab active:cursor-grabbing">
+                    
+                    <!-- Card 1: 核心目標 -->
+                    <div class="min-w-[85vw] md:min-w-[420px] snap-center glass-card rounded-2xl p-6 flex flex-col border-t-4 border-cc-purple shrink-0 hover:-translate-y-1 transition-transform">
+                        <div class="w-16 h-16 bg-cc-purple/20 rounded-xl flex items-center justify-center text-3xl mb-6 shadow-[0_0_15px_rgba(139,92,246,0.3)] border border-cc-purple/30">🎯</div>
+                        <h4 class="text-2xl font-black text-white mb-3 tracking-wider">核心目標：推動水晶</h4>
+                        <p class="text-gray-300 leading-relaxed flex-grow text-lg">
+                            地圖中央會有一顆「戰術水晶」。遊戲開始後，<span class="text-cc-gold font-bold">只要你或隊友站在水晶底下的圈內</span>，水晶就會朝著敵方陣地前進！<br><br>
+                            如果雙方都站在圈內，水晶會停住不動。人多並不會推得比較快，重點是保持圈內至少有一名我方成員。
+                        </p>
+                    </div>
+
+                    <!-- Card 2: 勝利條件 -->
+                    <div class="min-w-[85vw] md:min-w-[420px] snap-center glass-card rounded-2xl p-6 flex flex-col border-t-4 border-cc-gold shrink-0 hover:-translate-y-1 transition-transform">
+                        <div class="w-16 h-16 bg-cc-gold/20 rounded-xl flex items-center justify-center text-3xl mb-6 shadow-[0_0_15px_rgba(251,191,36,0.3)] border border-cc-gold/30">🏆</div>
+                        <h4 class="text-2xl font-black text-white mb-3 tracking-wider">如何獲勝？</h4>
+                        <p class="text-gray-300 leading-relaxed flex-grow text-lg">
+                            將水晶推到敵方陣地的終點（進度達到 100%）就能直接獲勝。<br><br>
+                            若 5 分鐘時間到，雙方都沒推到底，且「進度落後方」有人踩在水晶圈內，就會進入<span class="text-cc-red font-bold">延長賽（Overtime）</span>。<br>
+                            👉 <span class="text-blue-300">領先方</span>：把圈內敵人全部趕出去維持 3 秒即獲勝。<br>
+                            👉 <span class="text-red-300">落後方</span>：必須死守水晶圈，並將進度反超對手才能獲勝！
+                        </p>
+                    </div>
+
+                    <!-- Card 3: 獨立生存 -->
+                    <div class="min-w-[85vw] md:min-w-[420px] snap-center glass-card rounded-2xl p-6 flex flex-col border-t-4 border-cc-red shrink-0 hover:-translate-y-1 transition-transform">
+                        <div class="w-16 h-16 bg-cc-red/20 rounded-xl flex items-center justify-center text-3xl mb-6 shadow-[0_0_15px_rgba(239,68,68,0.3)] border border-cc-red/30">⚔️</div>
+                        <h4 class="text-2xl font-black text-white mb-3 tracking-wider">戰鬥機制：人人皆打手</h4>
+                        <p class="text-gray-300 leading-relaxed flex-grow text-lg">
+                            這裡沒有傳統的「坦補打」鐵三角限制！每一個職業都有專屬的技能組與爆發極限技（LB）。<br><br>
+                            每個人都有 <span class="text-green-400 font-bold bg-green-400/10 px-1 rounded">回血（快復）</span> 與 <span class="text-blue-400 font-bold bg-blue-400/10 px-1 rounded">開盾（防禦）</span> 的共通技能。發現自己被集火時，趕緊開盾往後退，找角落喝水補滿血再重新加入戰局，活著才有輸出！
+                        </p>
+                    </div>
+
+                    <!-- Card 4: 地圖物件導覽 -->
+                    <div class="min-w-[85vw] md:min-w-[420px] snap-center glass-card rounded-2xl p-6 flex flex-col border-t-4 border-cc-blue shrink-0 hover:-translate-y-1 transition-transform relative overflow-hidden">
+                        <div class="absolute right-0 bottom-0 opacity-10 text-[10rem] pointer-events-none -mb-10 -mr-4">🗺️</div>
+                        <div class="w-16 h-16 bg-cc-blue/20 rounded-xl flex items-center justify-center text-3xl mb-6 shadow-[0_0_15px_rgba(59,130,246,0.3)] border border-cc-blue/30 relative z-10">🗺️</div>
+                        <h4 class="text-2xl font-black text-white mb-3 relative z-10 tracking-wider">地圖導覽：角力學校</h4>
+                        <div class="space-y-3 relative z-10 flex-grow">
+                            <div class="bg-black/60 p-3 rounded-lg border border-white/5 hover:bg-white/10 transition-colors">
+                                <span class="text-white font-bold flex items-center gap-2">🚩 出生點 (Spawn)</span>
+                                <p class="text-sm text-gray-400 mt-1">雙方的基地，被擊敗後會在此復活並重新加入戰場。</p>
+                            </div>
+                            <div class="bg-black/60 p-3 rounded-lg border border-white/5 hover:bg-white/10 transition-colors">
+                                <span class="text-cc-gold font-bold flex items-center gap-2">📍 檢查點 (Checkpoint)</span>
+                                <p class="text-sm text-gray-400 mt-1">軌跡上的中繼站，需在此佔領讓突破率達100%才能繼續推進。</p>
+                            </div>
+                            <div class="bg-black/60 p-3 rounded-lg border border-white/5 hover:bg-white/10 transition-colors">
+                                <span class="text-blue-400 font-bold flex items-center gap-2">💨 加速帶 (Sprint Zone)</span>
+                                <p class="text-sm text-gray-400 mt-1">地圖兩側的專屬跑道，踩上後大幅增加移動速度，適合包抄或撤退。</p>
+                            </div>
+                            <div class="bg-black/60 p-3 rounded-lg border border-white/5 hover:bg-white/10 transition-colors">
+                                <span class="text-green-400 font-bold flex items-center gap-2">💊 醫療包 (Medicine Kit)</span>
+                                <p class="text-sm text-gray-400 mt-1">地圖固定位置生成，觸碰瞬間恢復3萬HP，是殘血反殺的絕對關鍵。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            
+            <!-- 手機版提示 -->
+            <div class="flex md:hidden justify-center items-center mt-4 text-gray-400 text-sm animate-pulse gap-2 font-bold">
+                <span>←</span> 左右滑動查看新手須知 <span>→</span>
+            </div>
+        </section>
+
+        <!-- Call To Action (Registration Button Section) -->
+        <section id="register" class="pt-10 pb-20 text-center relative z-20">
+            <div class="glass-card rounded-[2rem] p-8 md:p-16 relative overflow-hidden shadow-[0_0_50px_rgba(239,68,68,0.2)] border border-cc-red/30 max-w-4xl mx-auto">
+                <div class="absolute inset-0 bg-gradient-to-t from-cc-red/10 to-transparent"></div>
+                
+                <h2 class="font-esports text-6xl md:text-7xl font-bold text-white mb-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] relative z-10">JOIN THE BATTLE</h2>
+                <p class="text-lg md:text-xl text-gray-300 font-bold mb-10 tracking-widest relative z-10">名額僅限 6 隊，額滿即止。點擊下方按鈕前往報名！</p>
+
+                <!-- 表單跳轉按鈕 (使用電競傾斜設計) -->
+                <a href="https://forms.gle/7Bc9Hiv8cX8uEmy86" target="_blank" class="btn-skew bg-esports-gradient inline-block px-12 md:px-16 py-5 md:py-6 shadow-[0_0_30px_rgba(239,68,68,0.5)] relative z-10 hover:scale-105 transition-transform">
+                    <span class="btn-skew-content text-2xl md:text-3xl font-black text-white uppercase tracking-[0.2em] drop-shadow-md">
+                        填寫報名表單
+                    </span>
+                </a>
+
+                <div class="mt-10 flex flex-col items-center gap-2 text-sm text-gray-400 font-bold relative z-10 bg-black/40 p-4 rounded-xl border border-white/5 w-fit mx-auto">
+                    <p class="text-cc-gold">⚠️ 報名費請於比賽開始前三天前練習賽或預約後於遊戲內交易</p>
+                    <p>如有任何報名疑問，請聯繫 Discord 群組管理員</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-10 border-t border-white/10 bg-black py-12 text-center relative z-10 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+        <div class="max-w-7xl mx-auto px-4">
+            <h3 class="text-white font-black tracking-widest mb-3 text-lg drop-shadow-md">第一屆繁中服水晶衝突社群賽</h3>
+            <p class="text-sm text-gray-400 mb-8 font-bold">主辦單位：愛輔愛輔學習平台十四代 <span class="mx-2 text-white/20">|</span> 指導單位：FFXIV 水晶十人委員會</p>
+            <div class="text-xs text-gray-600 space-y-2">
+                <p>FINAL FANTASY XIV © 2010 - 2024 SQUARE ENIX CO., LTD. All Rights Reserved.</p>
+                <p>此為社群自發性舉辦之賽事，非官方官方活動。</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 橫向滑動區塊 JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('scroll-container');
+            const btnLeft = document.getElementById('btn-left');
+            const btnRight = document.getElementById('btn-right');
+
+            if(btnLeft && btnRight && container) {
+                // 電腦版點擊按鈕滑動 (無限循環)
+                btnLeft.addEventListener('click', () => {
+                    if (container.scrollLeft <= 10) {
+                        container.scrollTo({ left: container.scrollWidth, behavior: 'smooth' });
+                    } else {
+                        container.scrollBy({ left: -440, behavior: 'smooth' }); // 稍微增加滑動距離配和變寬的卡片
+                    }
+                });
+                
+                btnRight.addEventListener('click', () => {
+                    const maxScroll = container.scrollWidth - container.clientWidth;
+                    if (container.scrollLeft >= maxScroll - 10) {
+                        container.scrollTo({ left: 0, behavior: 'smooth' });
+                    } else {
+                        container.scrollBy({ left: 440, behavior: 'smooth' });
+                    }
+                });
+
+                // 滑鼠拖曳滑動功能
+                let isDown = false;
+                let startX;
+                let scrollLeft;
+                let walk = 0;
+
+                container.addEventListener('mousedown', (e) => {
+                    isDown = true;
+                    container.classList.add('active');
+                    startX = e.pageX - container.offsetLeft;
+                    scrollLeft = container.scrollLeft;
+                    walk = 0;
+                });
+                container.addEventListener('mouseleave', () => {
+                    isDown = false;
+                    container.classList.remove('active');
+                });
+                container.addEventListener('mouseup', () => {
+                    if (!isDown) return;
+                    isDown = false;
+                    container.classList.remove('active');
+                    
+                    const maxScroll = container.scrollWidth - container.clientWidth;
+                    if (scrollLeft >= maxScroll - 10 && walk < -50) {
+                        container.scrollTo({ left: 0, behavior: 'smooth' });
+                    } else if (scrollLeft <= 10 && walk > 50) {
+                        container.scrollTo({ left: maxScroll, behavior: 'smooth' });
+                    }
+                });
+                container.addEventListener('mousemove', (e) => {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.pageX - container.offsetLeft;
+                    walk = (x - startX) * 2; 
+                    container.scrollLeft = scrollLeft - walk;
+                });
+
+                // 手機觸控無限循環檢測
+                let touchStartX;
+                let touchScrollLeft;
+                let touchWalk = 0;
+
+                container.addEventListener('touchstart', (e) => {
+                    touchStartX = e.touches[0].pageX;
+                    touchScrollLeft = container.scrollLeft;
+                    touchWalk = 0;
+                }, { passive: true });
+
+                container.addEventListener('touchmove', (e) => {
+                    touchWalk = e.touches[0].pageX - touchStartX;
+                }, { passive: true });
+
+                container.addEventListener('touchend', () => {
+                    const maxScroll = container.scrollWidth - container.clientWidth;
+                    if (touchScrollLeft >= maxScroll - 10 && touchWalk < -50) {
+                        container.scrollTo({ left: 0, behavior: 'smooth' });
+                    } else if (touchScrollLeft <= 10 && touchWalk > 50) {
+                        container.scrollTo({ left: maxScroll, behavior: 'smooth' });
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
