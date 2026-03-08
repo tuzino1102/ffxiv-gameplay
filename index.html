@@ -29,6 +29,7 @@
                         'float': 'float 6s ease-in-out infinite',
                         'float-delayed': 'float 6s ease-in-out infinite -3s',
                         'bounce-subtle': 'bounce-subtle 2s infinite',
+                        'spin-slow': 'spin 4s linear infinite',
                     },
                     keyframes: {
                         glow: {
@@ -50,7 +51,6 @@
     </script>
     <style type="text/tailwindcss">
         @layer utilities {
-            /* 玻璃擬物質感 */
             .glass-card {
                 background: rgba(21, 26, 39, 0.65);
                 backdrop-filter: blur(16px);
@@ -59,7 +59,6 @@
                 box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
             }
 
-            /* 修正版：電競傾斜按鈕與文字反向傾斜 */
             .btn-skew {
                 transform: skewX(-12deg);
             }
@@ -68,12 +67,10 @@
                 display: inline-block;
             }
 
-            /* 文字霓虹發光 */
             .text-neon-title {
                 text-shadow: 0 0 20px rgba(255,255,255,0.2), 0 0 40px rgba(239, 68, 68, 0.5), 0 0 80px rgba(59, 130, 246, 0.5);
             }
 
-            /* 電競按鈕漸層 */
             .bg-esports-gradient {
                 background: linear-gradient(45deg, #ef4444, #8b5cf6, #3b82f6);
                 background-size: 200% auto;
@@ -84,13 +81,21 @@
                 box-shadow: 0 0 30px rgba(139, 92, 246, 0.8);
             }
 
-            /* 隱藏橫向卷軸但保留滑動功能 */
             .no-scrollbar::-webkit-scrollbar {
                 display: none;
             }
             .no-scrollbar {
                 -ms-overflow-style: none;
                 scrollbar-width: none;
+            }
+            
+            /* 音樂播放器波紋特效 */
+            .music-playing .ripple {
+                animation: ripple 1.5s linear infinite;
+            }
+            @keyframes ripple {
+                0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.3); }
+                100% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0), 0 0 0 20px rgba(59, 130, 246, 0); }
             }
         }
         
@@ -110,31 +115,98 @@
         ::-webkit-scrollbar-thumb:hover { background: #ef4444; }
     </style>
 </head>
-<body class="antialiased selection:bg-cc-red selection:text-white bg-[#0a0d14] text-slate-200">
+<!-- 初始加上 overflow-hidden 防止在開場畫面時滾動 -->
+<body class="antialiased selection:bg-cc-red selection:text-white bg-[#0a0d14] text-slate-200 overflow-hidden" id="body-container">
 
-    <!-- Navbar -->
-    <nav class="fixed w-full z-50 glass-card border-b-0 border-white/5 py-3">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <div class="font-esports text-2xl tracking-widest font-bold text-white flex items-center gap-2">
-                <div class="w-4 h-4 bg-gradient-to-br from-cc-red to-cc-blue transform rotate-45 shadow-[0_0_10px_rgba(239,68,68,0.8)]"></div>
-                CCCT <span class="text-gray-500 text-sm font-sans hidden sm:inline tracking-normal">水晶衝突社群賽</span>
+    <!-- ========================================================
+         開場音效選擇遮罩 (Entrance Overlay)
+         ======================================================== -->
+    <div id="entrance-overlay" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0a0d14] transition-all duration-700 backdrop-blur-xl">
+        <!-- 背景裝飾 -->
+        <div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-60">
+            <div class="w-[400px] h-[400px] bg-gradient-to-br from-cc-red/20 to-cc-blue/20 rounded-full blur-[80px] animate-pulse"></div>
+        </div>
+        
+        <!-- 選擇面板 -->
+        <div class="relative z-10 glass-card p-10 md:p-14 rounded-[2rem] text-center max-w-lg mx-4 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] flex flex-col items-center">
+            <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-6 shadow-inner border border-white/10">
+                <span class="text-3xl">🎧</span>
             </div>
+            <h2 class="text-2xl md:text-3xl font-black text-white mb-3 drop-shadow-md tracking-wider">進入水晶衝突戰場</h2>
+            <p class="text-gray-400 mb-10 font-bold text-sm md:text-base">為獲得最佳的賽事體驗，<br class="hidden md:block">本網站包含背景音效，是否開啟？</p>
+            
+            <div class="flex flex-col w-full gap-4">
+                <button id="btn-sound-on" class="btn-skew bg-esports-gradient py-4 px-8 shadow-[0_0_20px_rgba(239,68,68,0.3)] hover:scale-105 transition-transform w-full border border-white/20">
+                    <span class="btn-skew-content font-black text-white text-lg tracking-[0.2em] w-full text-center">
+                        開啟音效並進入
+                    </span>
+                </button>
+                
+                <button id="btn-sound-off" class="btn-skew bg-white/5 border border-white/10 py-4 px-8 hover:bg-white/10 transition-colors w-full mt-2">
+                    <span class="btn-skew-content font-bold text-gray-400 text-lg tracking-[0.2em] w-full text-center">
+                        保持靜音進入
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 懸浮音樂播放器 (修復透明度動畫與顯示問題) -->
+    <div id="music-player-container" class="fixed bottom-6 right-6 z-50 flex items-center gap-3 transition-all duration-700 hover:scale-105 opacity-0">
+        <!-- 歌曲名稱提示 -->
+        <div id="music-tooltip" class="hidden md:block glass-card px-3 py-1.5 rounded-lg text-xs font-bold text-gray-300 opacity-0 transition-opacity whitespace-nowrap border-white/20">
+            Click to Play Music 🎵
+        </div>
+        
+        <!-- 播放按鈕 -->
+        <button id="music-toggle-btn" class="w-12 h-12 rounded-full glass-card flex items-center justify-center border-2 border-white/20 text-white shadow-lg relative overflow-hidden group">
+            <div class="absolute inset-0 bg-gradient-to-r from-cc-red/20 to-cc-blue/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <!-- 播放圖示 -->
+            <svg id="icon-play" class="w-5 h-5 ml-1 relative z-10" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+            <!-- 暫停圖示 -->
+            <svg id="icon-pause" class="w-5 h-5 hidden relative z-10 text-cc-gold animate-pulse" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+            <!-- 音樂播放中的光環特效 -->
+            <div id="music-ripple" class="absolute inset-0 rounded-full border-2 border-cc-gold/50 hidden"></div>
+        </button>
+
+        <audio id="bg-music" loop>
+    		<source src="Skyline Overclock.mp3" type="audio/mpeg">
+    		Your browser does not support the audio element.
+		</audio>
+    </div>
+
+   <!-- 導覽列 -->
+    <nav class="fixed w-full z-50 glass-card border-b-0 border-white/5 py-3 opacity-0 transition-opacity duration-1000" id="main-nav">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative flex items-center justify-between lg:justify-center">
+            <!-- 左側 Logo 區域 -->
+            <div class="lg:absolute lg:left-8">
+                <!-- 加上回到最上方的功能與 hover 旋轉特效 -->
+                <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" class="font-esports text-2xl tracking-widest font-bold text-white flex items-center gap-2 cursor-pointer group">
+                    <div class="w-4 h-4 bg-gradient-to-br from-cc-red to-cc-blue transform rotate-45 shadow-[0_0_10px_rgba(239,68,68,0.8)] group-hover:rotate-[225deg] transition-transform duration-500"></div>
+                    CCCT <span class="text-gray-500 text-sm font-sans hidden sm:inline tracking-normal group-hover:text-gray-300 transition-colors">水晶衝突社群賽</span>
+                </a>
+            </div>
+
+            <!-- 中央選單區域 -->
             <div class="hidden lg:flex space-x-6 lg:space-x-8 text-sm font-bold text-gray-300 tracking-wider">
                 <a href="#about" class="hover:text-white hover:text-shadow transition-colors">賽事資訊</a>
                 <a href="#rules" class="hover:text-white hover:text-shadow transition-colors">賽制與規則</a>
                 <a href="#schedule" class="hover:text-white hover:text-shadow transition-colors">賽程時間</a>
                 <a href="#how-to-play" class="hover:text-white hover:text-shadow transition-colors text-cc-gold">新手玩法</a>
             </div>
-            <a href="#register" class="bg-white/10 hover:bg-white/20 text-white px-6 py-2 rounded-full text-sm font-bold border border-white/10 transition-all shadow-lg hover:shadow-white/20">
-                前往報名
-            </a>
+
+            <!-- 右側報名按鈕區域 -->
+            <div class="lg:absolute lg:right-8">
+                <a href="#register" class="bg-white/10 hover:bg-white/20 text-white px-6 py-2 rounded-full text-sm font-bold border border-white/10 transition-all shadow-lg hover:shadow-white/20">
+                    前往報名
+                </a>
+            </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
     <header class="relative min-h-screen flex flex-col items-center justify-center pt-24 pb-20 overflow-hidden">
         
-        <!-- 動態漂浮發光水晶球特效 -->
         <div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
             <div class="absolute w-[600px] h-[600px] bg-gradient-to-r from-cc-red/20 via-cc-purple/20 to-cc-blue/20 rounded-full blur-[80px] animate-glow-pulse"></div>
             <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-cc-red/30 rounded-full blur-[60px] animate-float mix-blend-screen"></div>
@@ -143,7 +215,6 @@
 
         <div class="relative z-10 w-full max-w-7xl mx-auto px-4 flex flex-col items-center text-center flex-grow justify-center">
             
-            <!-- 活動日期標籤 -->
             <div class="mb-6 inline-flex items-center space-x-3 px-5 py-2 rounded-full glass-card border-cc-red/50 shadow-[0_0_20px_rgba(239,68,68,0.3)]">
                 <span class="w-2.5 h-2.5 bg-cc-red rounded-full animate-pulse shadow-[0_0_10px_#ef4444]"></span>
                 <span class="text-sm md:text-base font-black tracking-widest text-white">4 月 3 日 <span class="text-gray-400 mx-1">|</span> 決戰狼獄</span>
@@ -160,16 +231,13 @@
                 不僅是水晶的推動者，更是社群的開創者 —— 參與，即是榮耀。
             </p>
 
-            <!-- 修正版：傾斜按鈕區塊 -->
             <div class="flex flex-col md:flex-row gap-5 w-full md:w-auto px-4">
-                <!-- 報名按鈕 -->
                 <a href="#register" class="btn-skew bg-esports-gradient px-10 py-4 shadow-2xl group w-full md:w-auto border border-white/20">
                     <span class="btn-skew-content text-xl md:text-2xl font-black text-white uppercase tracking-widest block w-full text-center drop-shadow-md">
                         領取報名表單
                     </span>
                 </a>
                 
-                <!-- 新手教學按鈕 -->
                 <a href="#how-to-play" class="btn-skew px-10 py-4 border-2 border-white/20 bg-white/5 hover:bg-white/15 hover:border-cc-gold/50 transition-all backdrop-blur-sm group w-full md:w-auto">
                     <span class="btn-skew-content text-xl font-bold text-cc-gold block w-full text-center drop-shadow-md">
                         我是新手：五分鐘看懂玩法
@@ -178,7 +246,6 @@
             </div>
         </div>
 
-        <!-- 修正版：向下滾動提示箭頭 (確保在底部且不重疊) -->
         <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
             <a href="#about" class="flex flex-col items-center justify-center text-gray-400 hover:text-white transition-colors animate-bounce-subtle">
                 <span class="text-xs font-bold tracking-[0.2em] mb-2">SCROLL</span>
@@ -187,11 +254,10 @@
         </div>
     </header>
 
-    <!-- Quick Info Bar (加入了活動日期) -->
+    <!-- Quick Info Bar -->
     <div class="border-y border-white/10 bg-[#05070a]/80 backdrop-blur-xl relative z-20 shadow-[0_0_30px_rgba(0,0,0,0.8)]" id="about">
         <div class="max-w-7xl mx-auto px-4 py-8">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center divide-x divide-white/10">
-                <!-- 更新：新增日期區塊 -->
                 <div>
                     <p class="text-xs text-gray-500 font-bold tracking-widest uppercase mb-2">賽事日期</p>
                     <p class="text-sm md:text-lg font-black text-cc-red drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]">4 月 3 日 19:00</p>
@@ -206,7 +272,7 @@
                 </div>
                 <div>
                     <p class="text-xs text-gray-500 font-bold tracking-widest uppercase mb-2">主辦單位</p>
-                    <p class="text-sm md:text-lg font-bold text-white drop-shadow-md">愛輔愛輔學習平台</p>
+                    <p class="text-sm md:text-lg font-bold text-white drop-shadow-md">愛輔愛輔學習平台十四代</p>
                 </div>
             </div>
         </div>
@@ -217,9 +283,25 @@
         <!-- Prize Section -->
         <section id="prizes" class="relative">
             <div class="text-center mb-16">
-                <h2 class="font-esports text-5xl md:text-7xl font-bold text-white mb-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">PRIZE POOL</h2>
-                <h3 class="text-2xl md:text-3xl font-bold text-gray-300">總獎金池高達 1,500,000 Gil</h3>
-                <div class="w-32 h-1 bg-gradient-to-r from-transparent via-cc-gold to-transparent mx-auto mt-8"></div>
+                <h2 class="font-esports text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">PRIZE POOL</h2>
+                
+                <div class="inline-block relative">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-cc-gold via-yellow-200 to-cc-gold rounded-xl blur opacity-30 animate-pulse"></div>
+                    <div class="relative bg-black/60 border border-cc-gold/40 px-8 py-5 md:px-12 md:py-6 rounded-2xl backdrop-blur-md shadow-[0_0_30px_rgba(251,191,36,0.15)]">
+                        <p class="text-gray-400 text-sm md:text-base font-bold tracking-[0.3em] mb-2 uppercase">Current Total Prize</p>
+                        <div class="flex items-baseline justify-center gap-3">
+                            <span class="prize-number text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-100 via-yellow-300 to-cc-gold tabular-nums tracking-tight" data-value="2500000">0</span>
+                            <span class="text-cc-gold font-black text-2xl md:text-3xl">Gil</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex items-center justify-center gap-2 text-sm md:text-base text-gray-300 font-bold bg-white/5 mx-auto w-fit px-4 py-2 rounded-full border border-white/10">
+                    <span class="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_#4ade80]"></span>
+                    <span>包含社群熱情贊助加碼，總獎金池持續滾動中！</span>
+                </div>
+                
+                <div class="w-32 h-1 bg-gradient-to-r from-transparent via-cc-gold to-transparent mx-auto mt-10"></div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -228,7 +310,7 @@
                     <div class="bg-cc-surface/90 p-8 rounded-xl h-full flex flex-col items-center text-center border border-yellow-500/40 relative z-10">
                         <div class="w-24 h-24 bg-gradient-to-br from-yellow-300 to-yellow-600 rounded-full flex items-center justify-center text-5xl shadow-[0_0_40px_rgba(234,179,8,0.6)] mb-6 clip-crystal border-2 border-yellow-200">🏆</div>
                         <h4 class="text-gray-300 font-bold tracking-[0.2em] mb-3 text-lg">冠軍 CHAMPION</h4>
-                        <div class="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500 mb-2 drop-shadow-lg">1,000,000</div>
+                        <div class="prize-number text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500 mb-2 drop-shadow-lg tabular-nums" data-value="1750000">0</div>
                         <p class="text-yellow-500 font-black tracking-widest text-xl">Gil</p>
                     </div>
                 </div>
@@ -238,7 +320,7 @@
                     <div class="bg-cc-surface/90 p-8 rounded-xl h-full flex flex-col items-center text-center border border-gray-500/40 relative z-10">
                         <div class="w-24 h-24 bg-gradient-to-br from-gray-300 to-gray-500 rounded-full flex items-center justify-center text-5xl shadow-[0_0_30px_rgba(156,163,175,0.4)] mb-6 clip-crystal border-2 border-gray-200">🥈</div>
                         <h4 class="text-gray-300 font-bold tracking-[0.2em] mb-3 text-lg">亞軍 RUNNER-UP</h4>
-                        <div class="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-300 to-gray-500 mb-2 drop-shadow-lg">500,000</div>
+                        <div class="prize-number text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-300 to-gray-500 mb-2 drop-shadow-lg tabular-nums" data-value="750000">0</div>
                         <p class="text-gray-400 font-black tracking-widest text-xl">Gil</p>
                     </div>
                 </div>
@@ -255,7 +337,6 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <!-- Left Column: General Rules -->
                 <div class="lg:col-span-5 space-y-6">
                     <div class="glass-card p-8 rounded-2xl border-l-4 border-cc-red shadow-[0_0_20px_rgba(239,68,68,0.1)]">
                         <h4 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
@@ -280,7 +361,6 @@
                     </div>
                 </div>
 
-                <!-- Right Column: Point System -->
                 <div class="lg:col-span-7">
                     <div class="glass-card p-8 rounded-2xl h-full relative overflow-hidden border border-cc-blue/20 shadow-[0_0_30px_rgba(59,130,246,0.15)]">
                         <div class="absolute top-0 right-0 w-80 h-80 bg-cc-blue/10 rounded-full blur-[80px] -mr-20 -mt-20"></div>
@@ -355,19 +435,76 @@
                 <div>
                     <h2 class="font-esports text-5xl md:text-6xl font-bold text-white drop-shadow-md">EVENT SCHEDULE</h2>
                     <h3 class="text-2xl font-bold text-cc-gold mt-2 flex items-center gap-3">
-                        賽程時間表 <span class="text-sm font-mono text-cc-red bg-cc-red/10 px-2 py-1 rounded border border-cc-red/30">4/3 (五)</span>
+                        賽程時間表 
                     </h3>
                 </div>
             </div>
 
             <div class="max-w-5xl mx-auto">
+                <!-- 賽前練習賽 (Pre-Tournament Scrims) -->
+                <div class="mb-12 glass-card rounded-3xl p-8 md:p-10 border-t-4 border-cc-purple shadow-[0_0_30px_rgba(139,92,246,0.15)] relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-80 h-80 bg-cc-purple/10 rounded-full blur-[80px] pointer-events-none -mt-10 -mr-10"></div>
+                    <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
+                        
+                        <!-- 練習賽基本資訊 -->
+                        <div class="flex-1 w-full">
+                            <div class="inline-flex items-center gap-2 bg-cc-purple/20 border border-cc-purple/30 text-cc-purple px-4 py-1.5 rounded-full text-xs font-bold tracking-widest mb-4 uppercase">
+                                <span class="w-2 h-2 rounded-full bg-cc-purple animate-pulse shadow-[0_0_8px_#c084fc]"></span>
+                                Warm-up Scrims
+                            </div>
+                            <h4 class="text-3xl font-black text-white mb-3 drop-shadow-md tracking-wider">官方熱身練習賽</h4>
+                            <p class="text-gray-300 mb-8 text-sm md:text-base leading-relaxed">
+                                賽前將由主辦方規劃專屬練習賽，提供參賽選手磨合陣容與熟悉賽制的最佳實戰舞台。
+                            </p>
+
+                            <div class="flex flex-wrap gap-4 mb-2">
+                                <div class="bg-black/60 border border-white/10 rounded-xl px-5 py-4 flex items-center gap-4 hover:bg-white/10 transition-colors shadow-inner">
+                                    <span class="text-3xl drop-shadow-md">📅</span>
+                                    <div>
+                                        <p class="text-xs text-gray-500 font-bold uppercase tracking-widest mb-1">比賽日期 (週五)</p>
+                                        <p class="text-white font-black font-mono text-lg tracking-wider">3/13, 3/20, 3/27</p>
+                                    </div>
+                                </div>
+                                <div class="bg-black/60 border border-white/10 rounded-xl px-5 py-4 flex items-center gap-4 hover:bg-white/10 transition-colors shadow-inner">
+                                    <span class="text-3xl drop-shadow-md">⏰</span>
+                                    <div>
+                                        <p class="text-xs text-gray-500 font-bold uppercase tracking-widest mb-1">對戰時間</p>
+                                        <p class="text-white font-black font-mono text-lg tracking-wider">20:00 - 22:00</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 規範警告區塊 -->
+                        <div class="w-full lg:w-5/12 bg-gradient-to-br from-[#1a0b0d] to-black border border-cc-red/30 rounded-2xl p-6 shadow-[inset_0_0_20px_rgba(239,68,68,0.05)] relative">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-cc-red rounded-l-2xl shadow-[0_0_10px_#ef4444]"></div>
+                            <h5 class="text-cc-red font-black flex items-center gap-2 mb-4 text-lg tracking-wider">
+                                <svg class="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                參賽確認規範
+                            </h5>
+                            <p class="text-sm md:text-base text-gray-300 leading-relaxed mb-4">
+                                為精準安排對戰組合，請務必於練習賽<strong class="text-white mx-1 border-b-2 border-cc-red pb-0.5">當日 19:00 前</strong>回報將以「全隊團練」或「個人單排」形式出席。
+                            </p>
+                            <div class="bg-cc-red/10 rounded-lg p-3 border border-cc-red/20 flex items-start gap-2.5">
+                                <span class="text-cc-gold mt-0.5 text-lg">⚠️</span>
+                                <span class="text-cc-gold text-sm font-bold leading-relaxed tracking-wide">逾時未回報者，當晚僅能作為「候補位 (Sub)」等待進場，無法保證上場名額。</span>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
                 <div class="glass-card rounded-3xl p-6 md:p-10 border border-white/5 relative overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.5)]">
                     <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-cc-purple/10 rounded-full blur-[80px] pointer-events-none opacity-50"></div>
-                    
+               
                     <div class="relative z-10">
                         <!-- 開場 -->
+			<h4 class="text-3xl font-black text-white mb-3 drop-shadow-md tracking-wider text-center">
+  				正賽
+			</h4>
                         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 py-4 mb-6 bg-white/5 rounded-xl border border-white/10">
-                            <span class="text-cc-gold font-mono font-bold text-xl">19:00 - 19:40</span>
+                            <span class="text-cc-gold font-mono font-bold text-xl"><span class="text-sm font-mono text-cc-red bg-cc-red/10 px-2 py-1 rounded border border-cc-red/30">4/3 (五)</span>
+19:00 - 19:40</span>
                             <span class="hidden sm:inline text-white/20">|</span>
                             <span class="text-white font-bold tracking-widest">模式簡介與分組 / 地圖抽籤</span>
                         </div>
@@ -424,7 +561,6 @@
                 </div>
             </div>
         </section>
-
         <!-- HOW TO PLAY Section (橫向滑動區塊) -->
         <section id="how-to-play" class="pt-16 pb-10">
             <div class="flex flex-col md:flex-row items-end justify-between mb-8 border-b border-white/10 pb-6">
@@ -504,7 +640,6 @@
                 </div>
             </div>
             
-            <!-- 手機版提示 -->
             <div class="flex md:hidden justify-center items-center mt-4 text-gray-400 text-sm animate-pulse gap-2 font-bold">
                 <span>←</span> 左右滑動查看新手須知 <span>→</span>
             </div>
@@ -518,7 +653,6 @@
                 <h2 class="font-esports text-6xl md:text-7xl font-bold text-white mb-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] relative z-10">JOIN THE BATTLE</h2>
                 <p class="text-lg md:text-xl text-gray-300 font-bold mb-10 tracking-widest relative z-10">名額僅限 6 隊，額滿即止。點擊下方按鈕前往報名！</p>
 
-                <!-- 表單跳轉按鈕 (使用電競傾斜設計) -->
                 <a href="https://forms.gle/7Bc9Hiv8cX8uEmy86" target="_blank" class="btn-skew bg-esports-gradient inline-block px-12 md:px-16 py-5 md:py-6 shadow-[0_0_30px_rgba(239,68,68,0.5)] relative z-10 hover:scale-105 transition-transform">
                     <span class="btn-skew-content text-2xl md:text-3xl font-black text-white uppercase tracking-[0.2em] drop-shadow-md">
                         填寫報名表單
@@ -546,20 +680,114 @@
         </div>
     </footer>
 
-    <!-- 橫向滑動區塊 JavaScript -->
+    <!-- JavaScript 區塊 (包含滑動卡片與音樂播放器控制) -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            
+            /* =========================================
+               1. 開場遮罩與音樂控制邏輯
+               ========================================= */
+            const overlay = document.getElementById('entrance-overlay');
+            const bodyContainer = document.getElementById('body-container');
+            const mainNav = document.getElementById('main-nav');
+            const audio = document.getElementById('bg-music');
+            const playBtn = document.getElementById('music-toggle-btn');
+            const musicPlayerContainer = document.getElementById('music-player-container');
+            const iconPlay = document.getElementById('icon-play');
+            const iconPause = document.getElementById('icon-pause');
+            const musicRipple = document.getElementById('music-ripple');
+            const tooltip = document.getElementById('music-tooltip');
+            
+            const btnSoundOn = document.getElementById('btn-sound-on');
+            const btnSoundOff = document.getElementById('btn-sound-off');
+            
+            let isPlaying = false;
+
+            // 預設音量 10%
+            audio.volume = 0.1;
+
+            // 進入網站的共同過場動畫函數
+            const enterSite = () => {
+                // 1. 遮罩淡出
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                
+                // 2. 恢復卷軸滾動
+                bodyContainer.classList.remove('overflow-hidden');
+                
+                // 3. 防呆安全解鎖：顯示導覽列與右下角音樂播放器 (?代表如果元素不見了也不會報錯)
+                mainNav?.classList.remove('opacity-0');
+                musicPlayerContainer?.classList.remove('opacity-0');
+
+                // 4. 完全移除遮罩以防阻擋後續點擊 (等淡出動畫 700ms 結束後)
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 700);
+            };
+
+            // 【按鈕1】開啟音效並進入
+            btnSoundOn.addEventListener('click', () => {
+                audio.currentTime = 0; // 【修復重點】強制將音樂時間歸零，確保100%從頭開始播放！
+                audio.play().then(() => {
+                    isPlaying = true;
+                    iconPlay.classList.add('hidden');
+                    iconPause.classList.remove('hidden');
+                    musicRipple.classList.remove('hidden');
+                    playBtn.classList.add('music-playing');
+                    tooltip.innerText = "Playing... 🔊";
+                }).catch(e => console.log("播放失敗:", e));
+                
+                enterSite();
+            });
+
+            // 【按鈕2】保持靜音進入
+            btnSoundOff.addEventListener('click', () => {
+                isPlaying = false;
+                iconPause.classList.add('hidden');
+                iconPlay.classList.remove('hidden');
+                musicRipple.classList.add('hidden');
+                playBtn.classList.remove('music-playing');
+                tooltip.innerText = "Click to Play Music 🎵";
+                
+                enterSite();
+            });
+
+            // 右下角懸浮按鈕手動切換邏輯
+            playBtn.addEventListener('mouseenter', () => tooltip.classList.remove('opacity-0'));
+            playBtn.addEventListener('mouseleave', () => tooltip.classList.add('opacity-0'));
+
+            playBtn.addEventListener('click', () => {
+                if (isPlaying) {
+                    audio.pause();
+                    isPlaying = false;
+                    iconPause.classList.add('hidden');
+                    iconPlay.classList.remove('hidden');
+                    musicRipple.classList.add('hidden');
+                    playBtn.classList.remove('music-playing');
+                    tooltip.innerText = "Click to Play Music 🎵";
+                } else {
+                    audio.play();
+                    isPlaying = true;
+                    iconPlay.classList.add('hidden');
+                    iconPause.classList.remove('hidden');
+                    musicRipple.classList.remove('hidden');
+                    playBtn.classList.add('music-playing');
+                    tooltip.innerText = "Playing... 🔊";
+                }
+            });
+
+            /* =========================================
+               2. 橫向滑動卡片控制邏輯
+               ========================================= */
             const container = document.getElementById('scroll-container');
             const btnLeft = document.getElementById('btn-left');
             const btnRight = document.getElementById('btn-right');
 
             if(btnLeft && btnRight && container) {
-                // 電腦版點擊按鈕滑動 (無限循環)
                 btnLeft.addEventListener('click', () => {
                     if (container.scrollLeft <= 10) {
                         container.scrollTo({ left: container.scrollWidth, behavior: 'smooth' });
                     } else {
-                        container.scrollBy({ left: -440, behavior: 'smooth' }); // 稍微增加滑動距離配和變寬的卡片
+                        container.scrollBy({ left: -440, behavior: 'smooth' }); 
                     }
                 });
                 
@@ -572,7 +800,6 @@
                     }
                 });
 
-                // 滑鼠拖曳滑動功能
                 let isDown = false;
                 let startX;
                 let scrollLeft;
@@ -609,7 +836,6 @@
                     container.scrollLeft = scrollLeft - walk;
                 });
 
-                // 手機觸控無限循環檢測
                 let touchStartX;
                 let touchScrollLeft;
                 let touchWalk = 0;
@@ -633,9 +859,52 @@
                     }
                 });
             }
+
+            /* =========================================
+               3. 獎金池動態數字滾動特效
+               ========================================= */
+            const prizeNumbers = document.querySelectorAll('.prize-number');
+            let hasAnimatedPrizes = false;
+
+            const animateNumbers = () => {
+                prizeNumbers.forEach(el => {
+                    const target = parseInt(el.getAttribute('data-value'), 10);
+                    const duration = 2500; 
+                    const frameRate = 30; 
+                    const totalFrames = Math.round((duration / 1000) * frameRate);
+                    let frame = 0;
+
+                    const easeOutExpo = (x) => {
+                        return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
+                    };
+
+                    const counter = setInterval(() => {
+                        frame++;
+                        const progress = frame / totalFrames;
+                        const currentCount = Math.round(target * easeOutExpo(progress));
+                        
+                        el.innerText = currentCount.toLocaleString('en-US');
+
+                        if (frame === totalFrames) {
+                            clearInterval(counter);
+                            el.innerText = target.toLocaleString('en-US');
+                        }
+                    }, 1000 / frameRate);
+                });
+            };
+
+            const prizeSection = document.getElementById('prizes');
+            if (prizeSection) {
+                const observer = new IntersectionObserver((entries) => {
+                    if (entries[0].isIntersecting && !hasAnimatedPrizes) {
+                        hasAnimatedPrizes = true;
+                        animateNumbers();
+                    }
+                }, { threshold: 0.3 }); 
+                observer.observe(prizeSection);
+            }
+
         });
     </script>
 </body>
 </html>
-
-
