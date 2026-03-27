@@ -108,9 +108,9 @@
         const App = () => {
             const STORAGE_KEY = 'FF14_CC_TOURNAMENT_DATA';
             const defaultTeams = [
-                { name: 'BLACK JACK', theme: 'astra' },
-                { name: '非常食2', theme: 'umbra' },
-                { name: 'LoviRabbi', theme: 'astra' }
+                { name: '1', theme: 'astra' },
+                { name: '2', theme: 'umbra' },
+                { name: '3', theme: 'astra' }
             ];
 
             const [teams, setTeams] = useState(defaultTeams);
@@ -327,7 +327,7 @@
                                                                 <span>Progress</span>
                                                                 <div className="flex items-center gap-1 bg-slate-900/80 px-2 py-0.5 rounded border border-transparent hover:border-slate-700 transition-colors">
                                                                     <input 
-                                                                        type="number" min="0" max="100" step="0.1"
+                                                                        type="number" min="0" max="200" step="0.1"
                                                                         className="bg-transparent text-right w-12 font-mono font-bold text-blue-300 outline-none focus:text-blue-400"
                                                                         value={stats[i]?.progress ?? 0}
                                                                         onChange={(e) => updateStat(i, 'progress', e.target.value)}
@@ -337,9 +337,9 @@
                                                                 </div>
                                                             </div>
                                                             <div className="relative h-3.5 bg-slate-800 rounded-full border border-slate-700/50 cursor-ew-resize shadow-inner">
-                                                                <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-700 to-cyan-400 transition-all rounded-full pointer-events-none shadow-[0_0_10px_rgba(56,189,248,0.4)]" style={{ width: `${Math.min(100, stats[i]?.progress ?? 0)}%` }} />
+                                                                <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-700 to-cyan-400 transition-all rounded-full pointer-events-none shadow-[0_0_10px_rgba(56,189,248,0.4)]" style={{ width: `${Math.min(100, (stats[i]?.progress ?? 0) / 2)}%` }} />
                                                                 <input 
-                                                                    type="range" min="0" max="100" step="0.1" 
+                                                                    type="range" min="0" max="200" step="0.1" 
                                                                     className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize custom-range z-10" 
                                                                     onChange={(e) => updateStat(i, 'progress', e.target.value)} 
                                                                     value={stats[i]?.progress ?? 0} 
