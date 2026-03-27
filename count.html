@@ -2,183 +2,518 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>BO3 練習賽記分板</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FFXIV Crystalline Conflict Standings</title>
+    <!-- 載入 React 與 Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- 載入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: rgba(0, 0, 0, 0); /* 透明背景 */
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
+        @media print {
+            .no-print { display: none !important; }
+            body { background: #000 !important; }
+            .matrix-container { background: #111 !important; border: 1px solid #333 !important; }
         }
+        
+        /* 隱藏輸入框的上下箭頭 */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        
+        body { background-color: #05070a; color: #f1f5f9; overflow-x: hidden; }
+        
+        /* 自定義捲軸樣式 */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-        /* 記分板主容器 */
-        .scoreboard-container {
-            background: rgba(20, 20, 20, 0.9);
-            color: white;
-            padding: 10px 30px;
-            border-bottom-left-radius: 15px;
-            border-bottom-right-radius: 15px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            border: 1px solid #444;
-            user-select: none;
-        }
-
-        .team {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .team-name {
-            font-size: 14px;
-            font-weight: bold;
-            color: #aaa;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-
-        .score-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .score-display {
-            font-size: 36px;
-            font-weight: 800;
-            min-width: 40px;
-            text-align: center;
-            color: #fff;
-        }
-
-        /* BO3 燈號指示 */
-        .bo3-dots {
-            display: flex;
-            gap: 5px;
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
+        /* 隱藏原生 range 的預設樣式，以配合 Tailwind */
+        input[type=range].custom-range::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #fff;
             border-radius: 50%;
-            background: #333;
-            border: 1px solid #555;
+            cursor: ew-resize;
+            box-shadow: 0 0 10px rgba(0,0,0,0.8);
+            border: 2px solid #3b82f6;
         }
 
-        .dot.active {
-            background: #00ffcc; /* 勝場燈號顏色 */
-            box-shadow: 0 0 8px #00ffcc;
-            border-color: #fff;
+        /* 背景對抗動態光效 */
+        @keyframes aura-blue {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.15; }
+            50% { transform: translate(3%, 3%) scale(1.1); opacity: 0.3; }
         }
-
-        /* 控制按鈕 */
-        .btn {
-            cursor: pointer;
-            background: #444;
-            border: none;
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            transition: background 0.2s;
+        @keyframes aura-red {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.15; }
+            50% { transform: translate(-3%, -3%) scale(1.1); opacity: 0.3; }
         }
-
-        .btn:hover { background: #666; }
-        .btn:active { background: #888; }
-
-        .vs-text {
-            font-style: italic;
-            font-weight: bold;
-            color: #555;
-            font-size: 20px;
+        @keyframes clash-pulse {
+            0%, 100% { opacity: 0.05; transform: scale(0.9); }
+            50% { opacity: 0.2; transform: scale(1.1); }
         }
-
-        /* 隱藏控制按鈕 (當滑鼠沒移上去時，保持畫面乾淨) */
-        .controls {
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .scoreboard-container:hover .controls {
-            opacity: 1;
-        }
+        .bg-blue-aura { animation: aura-blue 8s ease-in-out infinite; }
+        .bg-red-aura { animation: aura-red 10s ease-in-out infinite; }
+        .bg-clash { animation: clash-pulse 6s ease-in-out infinite; }
     </style>
 </head>
 <body>
+    <div id="root"></div>
 
-    <div class="scoreboard-container">
-        <div class="team">
-            <div class="team-name" contenteditable="true">TEAM 1</div>
-            <div class="score-controls">
-                <div class="controls">
-                    <button class="btn" onclick="updateScore('a', -1)">-</button>
-                </div>
-                <div class="score-display" id="score-a">0</div>
-                <div class="controls">
-                    <button class="btn" onclick="updateScore('a', 1)">+</button>
-                </div>
-            </div>
-            <div class="bo3-dots" id="dots-a">
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
-        </div>
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
 
-        <div class="vs-text">VS</div>
+        const Icon = ({ name, size = 16, className = "" }) => {
+            const icons = {
+                plus: <path d="M12 5v14M5 12h14" />,
+                trash: <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />,
+                rotate: <path d="M1 4v6h6M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />,
+                timer: (<><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></>),
+                info: (<><circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" /></>),
+                copy: (<><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></>),
+                check: <path d="M20 6 9 17l-5-5" />,
+                upload: <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />,
+                share: <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />,
+                shield: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />,
+                crystal: <path d="M12 2L3 9l9 13 9-13-9-7zM12 22V11M3 9l9 2 9-2" />,
+                eye: (<><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></>),
+                zoom: (
+                    <>
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        <line x1="11" y1="8" x2="11" y2="14" />
+                        <line x1="8" y1="11" x2="14" y2="11" />
+                    </>
+                ),
+                edit: (
+                    <>
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    </>
+                ),
+                x: (<><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>)
+            };
+            
+            const remSize = `${size / 16}rem`;
+            return (
+                <svg style={{ width: remSize, height: remSize }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                    {icons[name]}
+                </svg>
+            );
+        };
 
-        <div class="team">
-            <div class="team-name" contenteditable="true">TEAM 2</div>
-            <div class="score-controls">
-                <div class="controls">
-                    <button class="btn" onclick="updateScore('b', -1)">-</button>
-                </div>
-                <div class="score-display" id="score-b">0</div>
-                <div class="controls">
-                    <button class="btn" onclick="updateScore('b', 1)">+</button>
-                </div>
-            </div>
-            <div class="bo3-dots" id="dots-b">
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
-        </div>
-    </div>
+        const App = () => {
+            const STORAGE_KEY = 'FF14_CC_TOURNAMENT_DATA';
+            const defaultTeams = [
+                { name: 'BLACK JACK', theme: 'astra' },
+                { name: '非常食2', theme: 'umbra' },
+                { name: 'LoviRabbi', theme: 'astra' }
+            ];
 
-    <script>
-        let scoreA = 0;
-        let scoreB = 0;
+            const [teams, setTeams] = useState(defaultTeams);
+            const [matches, setMatches] = useState({});
+            const [stats, setStats] = useState({});
+            const [tournamentTitle, setTournamentTitle] = useState('CRYSTALLINE CONFLICT COMMUNITY CUP');
+            const [copied, setCopied] = useState(false);
+            const [uiScale, setUiScale] = useState(1.2); 
+            const [isObsMode, setIsObsMode] = useState(false);
+            const [editingIdx, setEditingIdx] = useState(null);
 
-        function updateScore(team, change) {
-            if (team === 'a') {
-                scoreA = Math.max(0, Math.min(2, scoreA + change));
-                document.getElementById('score-a').innerText = scoreA;
-                updateDots('dots-a', scoreA);
-            } else {
-                scoreB = Math.max(0, Math.min(2, scoreB + change));
-                document.getElementById('score-b').innerText = scoreB;
-                updateDots('dots-b', scoreB);
-            }
-        }
-
-        function updateDots(containerId, score) {
-            const dots = document.getElementById(containerId).getElementsByClassName('dot');
-            for (let i = 0; i < dots.length; i++) {
-                if (i < score) {
-                    dots[i].classList.add('active');
-                } else {
-                    dots[i].classList.remove('active');
+            useEffect(() => {
+                const savedData = localStorage.getItem(STORAGE_KEY);
+                if (savedData) {
+                    try {
+                        const parsed = JSON.parse(savedData);
+                        setTeams(parsed.teams || defaultTeams);
+                        setMatches(parsed.matches || {});
+                        setStats(parsed.stats || {});
+                        setTournamentTitle(parsed.title || 'CRYSTALLINE CONFLICT COMMUNITY CUP');
+                        if(parsed.uiScale) setUiScale(parsed.uiScale);
+                    } catch (e) { console.error("讀取存檔失敗", e); }
                 }
+            }, []);
+
+            useEffect(() => {
+                const dataToSave = { teams, matches, stats, title: tournamentTitle, uiScale, lastUpdated: new Date().toISOString() };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+            }, [teams, matches, stats, tournamentTitle, uiScale]);
+
+            useEffect(() => {
+                document.documentElement.style.fontSize = `${uiScale * 16}px`;
+            }, [uiScale]);
+
+            const toggleResult = (i, j) => {
+                if (i === j) return;
+                const current = matches[`${i}-${j}`];
+                let next = (current === null || current === undefined) ? 1 : (current === 1 ? 0 : null);
+                setMatches(prev => ({
+                    ...prev,
+                    [`${i}-${j}`]: next,
+                    [`${j}-${i}`]: next === null ? null : (next === 1 ? 0 : 1)
+                }));
+            };
+
+            const updateStat = (index, field, value) => {
+                setStats(prev => ({
+                    ...prev,
+                    [index]: { ...prev[index], [field]: Math.max(0, parseFloat(value) || 0) }
+                }));
+            };
+
+            const addTeam = () => {
+                const newIdx = teams.length;
+                setTeams([...teams, { name: `新小隊 ${newIdx + 1}`, theme: newIdx % 2 === 0 ? 'astra' : 'umbra' }]);
+                setStats(prev => ({ ...prev, [newIdx]: { progress: 0, time: 0 } }));
+            };
+
+            const removeTeam = (index) => {
+                if (teams.length <= 2) return;
+                setTeams(teams.filter((_, i) => i !== index));
+            };
+
+            const exportData = () => {
+                const data = localStorage.getItem(STORAGE_KEY);
+                if (!data) return;
+                navigator.clipboard.writeText(data);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            };
+
+            const importData = () => {
+                const raw = prompt('請貼入備份的 JSON 代碼：');
+                if (!raw) return;
+                try {
+                    const parsed = JSON.parse(raw);
+                    setTeams(parsed.teams);
+                    setMatches(parsed.matches);
+                    setStats(parsed.stats);
+                    setTournamentTitle(parsed.title);
+                    alert('資料匯入成功！');
+                } catch (e) { alert('無效的代碼。'); }
             }
-        }
+
+            const getWins = (i) => teams.reduce((count, _, j) => count + (matches[`${i}-${j}`] === 1 ? 1 : 0), 0);
+
+            return (
+                <div className="min-h-screen p-4 md:p-8 font-sans transition-all duration-300">
+                    
+                    <button 
+                        onClick={() => setIsObsMode(!isObsMode)}
+                        className={`fixed top-4 right-4 z-50 p-3 rounded-full transition-all duration-300 shadow-lg border ${
+                            isObsMode 
+                            ? 'bg-slate-900 border-amber-500/30 text-amber-500 opacity-10 hover:opacity-100' 
+                            : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white hover:bg-slate-700'
+                        }`}
+                        title={isObsMode ? "退出 OBS 純淨模式" : "切換至 OBS 純淨滿版模式"}
+                    >
+                        <Icon name="eye" size={24} />
+                    </button>
+
+                    {/* 紅藍對抗動態光影背景 */}
+                    <div className="fixed inset-0 pointer-events-none overflow-hidden z-[-1]">
+                        {/* 左側星極藍光束 */}
+                        <div className="absolute top-[-20%] left-[-15%] w-[60%] h-[140%] bg-blue-700/30 blur-[130px] bg-blue-aura" style={{ transformOrigin: 'center left' }}></div>
+                        {/* 右側靈極紅光束 */}
+                        <div className="absolute top-[-20%] right-[-15%] w-[60%] h-[140%] bg-rose-700/30 blur-[130px] bg-red-aura" style={{ transformOrigin: 'center right' }}></div>
+                        {/* 中央衝突交錯區 */}
+                        <div className="absolute top-[20%] left-[35%] w-[30%] h-[60%] bg-purple-500/20 blur-[120px] bg-clash"></div>
+                        {/* 戰術網格增添科技感 */}
+                        <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+                    </div>
+
+                    <div className={`relative mx-auto transition-all duration-500 ${isObsMode ? 'w-full px-2 max-w-[100vw]' : 'max-w-7xl'}`}>
+                        
+                        {!isObsMode && (
+                            <div className="flex flex-wrap justify-between items-center gap-4 mb-6 no-print bg-slate-900/50 p-4 rounded-xl border border-slate-800 backdrop-blur-md transition-all">
+                                <div className="flex items-center gap-3 bg-slate-950 px-4 py-2 rounded-lg border border-slate-800">
+                                    <Icon name="zoom" size={18} className="text-amber-500" />
+                                    <span className="text-sm font-bold text-slate-400 uppercase tracking-tighter">全域縮放</span>
+                                    <input 
+                                        type="range" min="0.8" max="2.5" step="0.1" 
+                                        value={uiScale} onChange={(e) => setUiScale(parseFloat(e.target.value))}
+                                        className="w-32 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                                    />
+                                    <span className="text-sm font-mono text-amber-500 w-10 text-right">{Math.round(uiScale * 100)}%</span>
+                                </div>
+
+                                <div className="flex gap-2">
+                                    <button onClick={exportData} className="flex items-center gap-2 text-sm font-bold bg-slate-800 px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors">
+                                        <Icon name={copied ? "check" : "copy"} size={16} className={copied ? "text-emerald-400" : ""} />
+                                        {copied ? '已複製 JSON' : '備份代碼'}
+                                    </button>
+                                    <button onClick={importData} className="flex items-center gap-2 text-sm font-bold bg-slate-800 px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors">
+                                        <Icon name="upload" size={16} /> 匯入代碼
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        <header className="mb-8 border-l-[6px] border-amber-500 pl-6 py-2 bg-gradient-to-r from-amber-500/10 to-transparent">
+                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                                <div className="flex-1">
+                                    <p className="text-amber-500 font-black tracking-[0.2em] text-xs mb-1 drop-shadow-md">FINAL FANTASY XIV PvP MANAGEMENT</p>
+                                    <input value={tournamentTitle} onChange={(e) => setTournamentTitle(e.target.value)} className="text-3xl md:text-5xl font-black bg-transparent border-none outline-none w-full text-white uppercase tracking-tighter focus:text-amber-400 drop-shadow-lg" />
+                                </div>
+                                {!isObsMode && (
+                                    <button onClick={addTeam} className="group flex items-center gap-2 bg-blue-600 hover:bg-blue-500 px-8 py-4 rounded-lg text-sm font-bold skew-x-[-10deg] shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all">
+                                        <div className="skew-x-[10deg] flex items-center gap-2"><Icon name="plus" size={18} /> 登記新隊伍</div>
+                                    </button>
+                                )}
+                            </div>
+                        </header>
+
+                        <div className="matrix-container bg-[#14181f]/80 backdrop-blur-2xl rounded-xl border border-slate-700/50 shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden mb-8 relative">
+                            <div className="overflow-x-auto">
+                                <table className="w-full border-collapse relative z-10">
+                                    <thead>
+                                        <tr className="bg-[#1a1f26]/80 backdrop-blur-md">
+                                            <th className="p-6 text-left text-slate-400 text-sm font-bold tracking-widest uppercase border-b border-slate-700/50 w-72">TEAM INFO</th>
+                                            {teams.map((t, i) => (
+                                                <th key={i} className="p-4 border-b border-slate-700/50 min-w-[140px]">
+                                                    <div className={`text-sm font-black px-3 py-1 rounded inline-block uppercase ${t.theme === 'astra' ? 'bg-blue-500/20 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.2)] border border-blue-500/30' : 'bg-red-500/20 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.2)] border border-red-500/30'}`}>
+                                                        {t.name}
+                                                    </div>
+                                                </th>
+                                            ))}
+                                            <th className="p-4 border-b border-slate-700/50 bg-amber-500/10 text-amber-500 font-black text-lg text-center">WINS</th>
+                                            <th className="p-4 border-b border-slate-700/50 text-slate-400 text-sm font-bold uppercase text-center">INDICATORS (勝場累計)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {teams.map((rowTeam, i) => (
+                                            <tr key={i} className="group border-b border-slate-700/50 hover:bg-white/[0.04] transition-colors">
+                                                <td className="p-5 bg-[#11141a]/80 backdrop-blur-md sticky left-0 z-20 border-r border-slate-700/50 shadow-[10px_0_15px_-10px_rgba(0,0,0,0.5)]">
+                                                    <div className="flex items-start gap-4">
+                                                        <div className={`w-1.5 h-12 mt-1 rounded-full shadow-[0_0_12px] ${rowTeam.theme === 'astra' ? 'bg-blue-500 shadow-blue-500/60' : 'bg-red-500 shadow-red-500/60'}`} />
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="font-bold text-xl md:text-2xl w-full text-white truncate mb-2 drop-shadow-md">{rowTeam.name}</div>
+                                                            <div className="flex gap-3 items-center">
+                                                                <span className="text-xs text-slate-500 font-bold uppercase tracking-widest opacity-80">{rowTeam.theme === 'astra' ? 'ASTRA' : 'UMBRA'}</span>
+                                                                {!isObsMode && (
+                                                                    <button 
+                                                                        onClick={() => setEditingIdx(i)} 
+                                                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-900/40 text-blue-400 hover:bg-blue-600 hover:text-white rounded text-xs font-bold transition-colors ml-auto border border-blue-900/50"
+                                                                    >
+                                                                        <Icon name="edit" size={14} /> 編輯
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                {teams.map((_, j) => {
+                                                    const result = matches[`${i}-${j}`];
+                                                    const isSelf = i === j;
+                                                    return (
+                                                        <td key={j} onClick={() => !isSelf && toggleResult(i, j)} className={`p-0 text-center border-x border-slate-700/30 transition-all ${isSelf ? 'bg-black/40' : 'cursor-pointer hover:bg-white/5'}`}>
+                                                            {isSelf ? <div className="flex items-center justify-center opacity-5"><Icon name="crystal" size={40} className="rotate-12" /></div> : 
+                                                            <div className="h-28 flex items-center justify-center font-black">
+                                                                {result === 1 && <span className="text-5xl text-rose-500 drop-shadow-[0_0_20px_rgba(244,63,94,0.8)] animate-pulse">○</span>}
+                                                                {result === 0 && <span className="text-4xl text-slate-600 drop-shadow-md">×</span>}
+                                                                {result === null && <span className="text-slate-800 group-hover:text-slate-500 transition-colors text-3xl">--</span>}
+                                                            </div>}
+                                                        </td>
+                                                    );
+                                                })}
+                                                <td className="p-4 bg-amber-500/10 text-center text-5xl font-black text-amber-500 drop-shadow-[0_0_15px_rgba(245,158,11,0.4)]">{getWins(i)}</td>
+                                                <td className="p-5 min-w-[320px] bg-black/30">
+                                                    <div className="space-y-4">
+                                                        {/* 進度調整區：支援拖動與直接輸入 */}
+                                                        <div className="space-y-2">
+                                                            <div className="flex justify-between items-center text-xs font-bold text-blue-400 uppercase tracking-tighter opacity-90">
+                                                                <span>Progress</span>
+                                                                <div className="flex items-center gap-1 bg-slate-900/80 px-2 py-0.5 rounded border border-transparent hover:border-slate-700 transition-colors">
+                                                                    <input 
+                                                                        type="number" min="0" max="100" step="0.1"
+                                                                        className="bg-transparent text-right w-12 font-mono font-bold text-blue-300 outline-none focus:text-blue-400"
+                                                                        value={stats[i]?.progress ?? 0}
+                                                                        onChange={(e) => updateStat(i, 'progress', e.target.value)}
+                                                                        title="點擊此處可直接輸入進度數字"
+                                                                    />
+                                                                    <span>%</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="relative h-3.5 bg-slate-800 rounded-full border border-slate-700/50 cursor-ew-resize shadow-inner">
+                                                                <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-700 to-cyan-400 transition-all rounded-full pointer-events-none shadow-[0_0_10px_rgba(56,189,248,0.4)]" style={{ width: `${Math.min(100, stats[i]?.progress ?? 0)}%` }} />
+                                                                <input 
+                                                                    type="range" min="0" max="100" step="0.1" 
+                                                                    className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize custom-range z-10" 
+                                                                    onChange={(e) => updateStat(i, 'progress', e.target.value)} 
+                                                                    value={stats[i]?.progress ?? 0} 
+                                                                    title="左右拖動以調整進度"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        {/* 時間調整區：直接 O分 O秒 輸入 */}
+                                                        <div className="flex items-center justify-between bg-slate-900/80 border border-slate-700/50 rounded-lg px-3 py-2 hover:border-emerald-500/40 transition-colors shadow-inner" title="代表獲勝方贏下比賽所花費的時間，越短越好。">
+                                                            <div className="flex items-center gap-2">
+                                                                <Icon name="timer" size={16} className="text-slate-400" />
+                                                                <span className="text-xs text-slate-400 font-bold whitespace-nowrap tracking-wider">勝場耗時</span>
+                                                            </div>
+                                                            <div className="flex items-baseline text-emerald-400 font-mono font-bold">
+                                                                <input 
+                                                                    type="number" min="0"
+                                                                    className="bg-transparent text-right w-8 text-lg outline-none hover:bg-slate-800 focus:bg-slate-800 rounded transition-colors"
+                                                                    value={Math.floor((stats[i]?.time || 0) / 60)}
+                                                                    onChange={(e) => {
+                                                                        const m = parseInt(e.target.value || 0);
+                                                                        const s = Math.floor((stats[i]?.time || 0) % 60);
+                                                                        updateStat(i, 'time', (m * 60) + s);
+                                                                    }}
+                                                                    title="輸入分鐘"
+                                                                />
+                                                                <span className="text-xs text-slate-500 mx-1.5 font-sans">分</span>
+                                                                <input 
+                                                                    type="number" min="0" max="59"
+                                                                    className="bg-transparent text-right w-8 text-lg outline-none hover:bg-slate-800 focus:bg-slate-800 rounded transition-colors"
+                                                                    value={Math.floor((stats[i]?.time || 0) % 60)}
+                                                                    onChange={(e) => {
+                                                                        const m = Math.floor((stats[i]?.time || 0) / 60);
+                                                                        const s = parseInt(e.target.value || 0);
+                                                                        updateStat(i, 'time', (m * 60) + s);
+                                                                    }}
+                                                                    title="輸入秒數"
+                                                                />
+                                                                <span className="text-xs text-slate-500 ml-1.5 font-sans">秒</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        {!isObsMode && (
+                            <footer className="grid grid-cols-1 md:grid-cols-2 gap-6 no-print pb-20">
+                                <div className="bg-[#11141a]/90 backdrop-blur-md p-6 rounded-xl border border-slate-700/50 shadow-xl">
+                                    <div className="flex items-center gap-3 mb-5">
+                                        <div className="bg-amber-500 p-2 rounded-md"><Icon name="info" size={20} className="text-black" /></div>
+                                        <h3 className="text-white font-black text-base uppercase tracking-widest">排名判定邏輯 (REGULATIONS)</h3>
+                                    </div>
+                                    <ul className="text-sm text-slate-400 space-y-3 leading-relaxed">
+                                        <li className="flex gap-3"><span className="text-amber-500 font-bold">1.</span> 優先比對 <span className="text-white font-bold">勝場數 (WINS)</span></li>
+                                        <li className="flex gap-3"><span className="text-blue-400 font-bold">2.</span> 平手比對 <span className="text-blue-400 font-bold">勝利場次中推進度合計</span></li>
+                                        <li className="flex gap-3 items-start"><span className="text-emerald-500 font-bold">3.</span> <span>仍平手比對 <span className="text-emerald-500 font-bold">勝場總耗時</span> (代表獲勝方贏下比賽所花費的時間，越短越好)</span></li>
+                                    </ul>
+                                </div>
+                                <div className="bg-slate-900/40 p-6 rounded-xl border border-dashed border-slate-700/50 flex flex-col justify-center backdrop-blur-sm">
+                                    <h3 className="text-slate-400 font-bold text-xs mb-3 uppercase tracking-widest">介面操作提示</h3>
+                                    <p className="text-xs text-slate-500 leading-relaxed">
+                                        • 時間與進度皆可<b>直接點擊數字</b>進行輸入修改。<br/>
+                                        • 進度條已加粗觸控區域，游標放上去即可左右滑動拖曳。<br/>
+                                        • 點擊右上角眼睛圖示可進入 OBS 全螢幕無干擾模式。
+                                    </p>
+                                </div>
+                            </footer>
+                        )}
+
+                        {/* 巨集編輯面板 */}
+                        {editingIdx !== null && (
+                            <div className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm" style={{ fontSize: '1rem' }}>
+                                <div className="bg-[#0f141e] border-2 border-blue-500/50 rounded-2xl w-full max-w-2xl p-6 md:p-10 shadow-[0_0_80px_rgba(37,99,235,0.3)] flex flex-col gap-8 relative">
+                                    
+                                    <button onClick={() => setEditingIdx(null)} className="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors">
+                                        <Icon name="x" size={32} />
+                                    </button>
+
+                                    <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-wider border-b border-slate-700/50 pb-4">
+                                        編輯隊伍資訊 <span className="text-blue-400 text-lg md:text-2xl ml-2">EDIT TEAM</span>
+                                    </h2>
+
+                                    <div className="space-y-6">
+                                        <div>
+                                            <label className="block text-slate-400 font-bold mb-3 text-sm tracking-widest">隊伍名稱 (TEAM NAME)</label>
+                                            <input
+                                                value={teams[editingIdx].name}
+                                                onChange={(e) => { const nt = [...teams]; nt[editingIdx].name = e.target.value; setTeams(nt); }}
+                                                className="w-full bg-black/50 border border-slate-700 rounded-xl p-5 text-2xl font-bold text-white focus:border-blue-500 outline-none transition-colors"
+                                            />
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="bg-black/40 p-5 rounded-xl border border-slate-800">
+                                                <label className="block text-blue-400 font-bold mb-4 text-sm tracking-widest">推進度 (PROGRESS %)</label>
+                                                <div className="flex items-center gap-3">
+                                                    <button onClick={() => updateStat(editingIdx, 'progress', (stats[editingIdx]?.progress || 0) - 1)} className="w-12 h-12 rounded-lg bg-slate-800 text-white text-xl font-black hover:bg-slate-700 active:scale-95 transition-all">-</button>
+                                                    <input
+                                                        type="number"
+                                                        value={stats[editingIdx]?.progress ?? 0}
+                                                        onChange={(e) => updateStat(editingIdx, 'progress', e.target.value)}
+                                                        className="flex-1 bg-transparent border-b-2 border-slate-700 text-center text-4xl font-black text-white outline-none p-2 focus:border-blue-500"
+                                                    />
+                                                    <button onClick={() => updateStat(editingIdx, 'progress', (stats[editingIdx]?.progress || 0) + 1)} className="w-12 h-12 rounded-lg bg-slate-800 text-blue-400 text-xl font-black hover:bg-slate-700 active:scale-95 transition-all">+</button>
+                                                </div>
+                                            </div>
+
+                                            <div className="bg-black/40 p-5 rounded-xl border border-slate-800">
+                                                <label className="block text-emerald-400 font-bold mb-4 text-sm tracking-widest">勝場耗時 (MATCH TIME)</label>
+                                                <div className="flex items-center justify-center gap-2">
+                                                    <div className="flex flex-col items-center">
+                                                        <input
+                                                            type="number" min="0"
+                                                            value={Math.floor((stats[editingIdx]?.time || 0) / 60)}
+                                                            onChange={(e) => {
+                                                                const m = parseInt(e.target.value || 0);
+                                                                const s = Math.floor((stats[editingIdx]?.time || 0) % 60);
+                                                                updateStat(editingIdx, 'time', (m * 60) + s);
+                                                            }}
+                                                            className="w-20 bg-transparent border-b-2 border-slate-700 text-center text-4xl font-black text-white outline-none p-2 focus:border-emerald-500"
+                                                        />
+                                                        <span className="text-xs text-slate-500 font-bold mt-2">分 (MIN)</span>
+                                                    </div>
+                                                    
+                                                    <span className="text-4xl font-black text-slate-600 mb-6">:</span>
+
+                                                    <div className="flex flex-col items-center">
+                                                        <input
+                                                            type="number" min="0" max="59"
+                                                            value={Math.floor((stats[editingIdx]?.time || 0) % 60)}
+                                                            onChange={(e) => {
+                                                                const m = Math.floor((stats[editingIdx]?.time || 0) / 60);
+                                                                const s = parseInt(e.target.value || 0);
+                                                                updateStat(editingIdx, 'time', (m * 60) + s);
+                                                            }}
+                                                            className="w-20 bg-transparent border-b-2 border-slate-700 text-center text-4xl font-black text-white outline-none p-2 focus:border-emerald-500"
+                                                        />
+                                                        <span className="text-xs text-slate-500 font-bold mt-2">秒 (SEC)</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col md:flex-row justify-between mt-4 pt-6 border-t border-slate-800 gap-4">
+                                        <button onClick={() => {
+                                            if(confirm('確定要刪除此隊伍嗎？')) {
+                                                removeTeam(editingIdx);
+                                                setEditingIdx(null);
+                                            }
+                                        }} className="flex items-center justify-center gap-2 px-6 py-4 bg-red-950/40 text-red-500 hover:bg-red-600 hover:text-white rounded-xl font-bold transition-all border border-red-900/50">
+                                            <Icon name="trash" size={20} /> 刪除此隊伍
+                                        </button>
+
+                                        <button onClick={() => setEditingIdx(null)} className="flex-1 md:flex-none px-12 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-xl transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)]">
+                                            完成修改 (DONE)
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
