@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>BO3 練習賽記分板</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: rgba(0, 0, 0, 0); /* 透明背景 */
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* 記分板主容器 */
+        .scoreboard-container {
+            background: rgba(20, 20, 20, 0.9);
+            color: white;
+            padding: 10px 30px;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid #444;
+            user-select: none;
+        }
+
+        .team {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .team-name {
+            font-size: 14px;
+            font-weight: bold;
+            color: #aaa;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .score-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .score-display {
+            font-size: 36px;
+            font-weight: 800;
+            min-width: 40px;
+            text-align: center;
+            color: #fff;
+        }
+
+        /* BO3 燈號指示 */
+        .bo3-dots {
+            display: flex;
+            gap: 5px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #333;
+            border: 1px solid #555;
+        }
+
+        .dot.active {
+            background: #00ffcc; /* 勝場燈號顏色 */
+            box-shadow: 0 0 8px #00ffcc;
+            border-color: #fff;
+        }
+
+        /* 控制按鈕 */
+        .btn {
+            cursor: pointer;
+            background: #444;
+            border: none;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover { background: #666; }
+        .btn:active { background: #888; }
+
+        .vs-text {
+            font-style: italic;
+            font-weight: bold;
+            color: #555;
+            font-size: 20px;
+        }
+
+        /* 隱藏控制按鈕 (當滑鼠沒移上去時，保持畫面乾淨) */
+        .controls {
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .scoreboard-container:hover .controls {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scoreboard-container">
+        <div class="team">
+            <div class="team-name" contenteditable="true">TEAM 1</div>
+            <div class="score-controls">
+                <div class="controls">
+                    <button class="btn" onclick="updateScore('a', -1)">-</button>
+                </div>
+                <div class="score-display" id="score-a">0</div>
+                <div class="controls">
+                    <button class="btn" onclick="updateScore('a', 1)">+</button>
+                </div>
+            </div>
+            <div class="bo3-dots" id="dots-a">
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+
+        <div class="vs-text">VS</div>
+
+        <div class="team">
+            <div class="team-name" contenteditable="true">TEAM 2</div>
+            <div class="score-controls">
+                <div class="controls">
+                    <button class="btn" onclick="updateScore('b', -1)">-</button>
+                </div>
+                <div class="score-display" id="score-b">0</div>
+                <div class="controls">
+                    <button class="btn" onclick="updateScore('b', 1)">+</button>
+                </div>
+            </div>
+            <div class="bo3-dots" id="dots-b">
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let scoreA = 0;
+        let scoreB = 0;
+
+        function updateScore(team, change) {
+            if (team === 'a') {
+                scoreA = Math.max(0, Math.min(2, scoreA + change));
+                document.getElementById('score-a').innerText = scoreA;
+                updateDots('dots-a', scoreA);
+            } else {
+                scoreB = Math.max(0, Math.min(2, scoreB + change));
+                document.getElementById('score-b').innerText = scoreB;
+                updateDots('dots-b', scoreB);
+            }
+        }
+
+        function updateDots(containerId, score) {
+            const dots = document.getElementById(containerId).getElementsByClassName('dot');
+            for (let i = 0; i < dots.length; i++) {
+                if (i < score) {
+                    dots[i].classList.add('active');
+                } else {
+                    dots[i].classList.remove('active');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
