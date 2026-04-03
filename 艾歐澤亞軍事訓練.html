@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>艾歐澤亞聯邦模擬戰 | Eorzean Alliance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Noto+Serif+TC:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* FF14 UI 核心色票 */
+            --ff-gold: #c3a660;
+            --ff-gold-light: #eaddb6;
+            --ff-gold-dark: #6e5527;
+            --ff-bg-dark: #0a0a0c;
+            --ff-panel-bg: rgba(18, 18, 20, 0.85);
+            --ff-border: #8c7646;
+        }
+        
+        body {
+            font-family: 'Noto Serif TC', serif;
+            background-color: var(--ff-bg-dark);
+            /* 深邃的磨砂紋理背景 */
+            background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png');
+            color: #d1d5db;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* 標題與特殊字體 */
+        h1, h2, h3, h4, .ff-title {
+            font-family: 'Cinzel', 'Noto Serif TC', serif;
+        }
+
+        /* FF14 風格燙金邊框面板 */
+        .ff-panel {
+            background: var(--ff-panel-bg);
+            border: 1px solid var(--ff-border);
+            box-shadow: 
+                inset 0 0 20px rgba(0,0,0,0.8),
+                0 4px 15px rgba(0,0,0,0.5);
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+        /* 面板四角金屬裝飾 */
+        .ff-panel::before, .ff-panel::after {
+            content: ''; position: absolute; width: 12px; height: 12px; border: 2px solid var(--ff-gold-light); z-index: 10;
+        }
+        .ff-panel::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+        .ff-panel::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+        /* 史詩宣言羊皮卷 */
+        .epic-scroll {
+            background-color: #dcd0b6;
+            background-image: url('https://www.transparenttextures.com/patterns/parchment.png');
+            color: #2c2416;
+            box-shadow: 
+                0 20px 50px rgba(0,0,0,0.8),
+                inset 0 0 60px rgba(139, 69, 19, 0.3);
+            border-top: 6px solid #8b1c1c;
+            border-bottom: 6px solid #8b1c1c;
+            position: relative;
+        }
+
+        /* 軍旗卡片 (Faction Banners) */
+        .banner-card {
+            aspect-ratio: 3 / 4;
+            position: relative;
+            background: #111;
+            border: 2px solid var(--ff-gold-dark);
+            border-radius: 4px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .banner-card::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.9) 100%);
+            z-index: 1;
+        }
+        /* 懸浮特效：軍旗發光、上浮 */
+        .banner-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--ff-gold-light);
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.9),
+                0 0 20px rgba(195, 166, 96, 0.3);
+        }
+        .banner-logo {
+            width: 60%;
+            height: auto;
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 0 15px rgba(0,0,0,0.8));
+            transition: transform 0.5s ease;
+        }
+        .banner-card:hover .banner-logo {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.2));
+        }
+        .banner-text {
+            position: absolute;
+            bottom: 8%;
+            z-index: 2;
+            text-align: center;
+            width: 100%;
+        }
+
+        /* 發光文字 */
+        .text-glow {
+            text-shadow: 0 0 15px rgba(195, 166, 96, 0.6);
+        }
+
+        /* 模態框背景模糊加深 */
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+        }
+
+        /* 職業卡片優化 */
+        .job-row {
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .job-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-left-color: var(--ff-gold);
+        }
+
+        /* 自訂卷軸 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--ff-bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--ff-gold-dark); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--ff-gold); }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- 1. Hero 史詩開場 -->
+    <header class="relative min-h-[70vh] flex flex-col items-center justify-center text-center px-6 border-b border-[#332a1b]">
+        <!-- 假想的戰場背景圖 (使用黑化漸層覆蓋) -->
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-30"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-var(--ff-bg-dark) via-transparent to-black/80"></div>
+        
+        <div class="relative z-10 w-full max-w-5xl flex flex-col items-center">
+            <p class="text-[--ff-gold] tracking-[0.3em] text-sm md:text-base font-bold mb-6 uppercase drop-shadow-md">
+                The Grand Company Joint Exercise
+            </p>
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-black mb-8 ff-title text-white text-glow tracking-widest">
+                洲際聯邦模擬戰
+            </h1>
+            <img src="https://ffxiv.gamerescape.com/wiki/Special:FilePath/Meteor_Logo.png" alt="Meteor" class="w-24 md:w-32 opacity-80 mb-8 filter drop-shadow-[0_0_10px_#fff]">
+            
+            <button onclick="document.getElementById('manifesto').scrollIntoView({behavior: 'smooth'})" class="animate-bounce mt-8 text-[--ff-gold-light] hover:text-white transition-colors">
+                <i data-lucide="chevron-down" class="w-10 h-10"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- 2. 獨立的劇情宣言板塊 (強迫帶入感) -->
+    <section id="manifesto" class="py-20 px-6 relative z-10 -mt-10">
+        <div class="max-w-4xl mx-auto epic-scroll p-10 md:p-16">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-black text-[#8b1c1c] ff-title tracking-wider mb-2">聯合演練宣告</h2>
+                <div class="h-0.5 w-40 bg-[#8b1c1c] mx-auto opacity-50"></div>
+            </div>
+            
+            <div class="space-y-6 text-lg md:text-xl leading-loose font-medium text-[#3b2a18] text-justify font-serif">
+                <p>
+                    <span class="text-2xl font-black text-[#8b1c1c]">「在和平的時代，打磨和平的利刃。」</span>
+                </p>
+                <p>
+                    繼慶祝伊修加爾德回歸而舉辦的『共同演練』後，艾歐澤亞的星海迎來了久違的寧靜。然而，末日危機的解除並不意味著武裝的卸除。
+                </p>
+                <p>
+                    為了加深與<span class="font-bold">東方聯盟</span>、<span class="font-bold">薩雷安</span>及近東地區的軍事技術交流，並確保各國在面對未來未知威脅時能具備完美的協同作戰能力，艾歐澤亞聯盟議會正式決議：
+                </p>
+                <p>
+                    舉辦首屆史無前例的大規模聯合軍演——<span class="font-black text-[#8b1c1c] text-2xl mx-1">「洲際聯邦模擬戰」</span>。
+                </p>
+                <p class="pt-4 border-t border-[#8b1c1c]/20">
+                    這不僅是為了慶祝這顆星球的新生，更是為了在水晶之巔，選拔出守護未來最鋒利的劍與最堅固的盾。<br>
+                    <span class="block mt-4 text-center font-black text-2xl text-[#5a4222]">冒險者啊，選擇你所效忠的大國防聯軍，<br>將你的戰略與信念，銘刻於戰場之上！</span>
+                </p>
+            </div>
+            <!-- 裝飾用印章 -->
+            <div class="absolute bottom-6 right-10 opacity-40">
+                <div class="w-24 h-24 rounded-full border-4 border-[#8b1c1c] flex items-center justify-center transform rotate-12 text-[#8b1c1c] font-black tracking-widest text-xl">
+                    ALLIANCE
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. 大國防聯軍軍旗列陣 (Faction Banners) -->
+    <section id="factions" class="py-16 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center justify-center gap-6 mb-16">
+                <div class="h-px w-24 bg-gradient-to-r from-transparent to-[--ff-gold]"></div>
+                <h2 class="text-3xl md:text-4xl font-black text-center ff-title text-white text-glow">參戰陣營名冊</h2>
+                <div class="h-px w-24 bg-gradient-to-l from-transparent to-[--ff-gold]"></div>
+            </div>
+            
+            <!-- 使用 Grid 排版軍旗 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12" id="faction-container">
+                <!-- 由 JS 生成軍旗 -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 軍規與遊走職 (FF14 UI 風格) -->
+    <section class="py-20 px-6 bg-[#050505] border-t border-[#332a1b]">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-2xl font-black text-center ff-title text-[--ff-gold] mb-12 tracking-widest">特殊編制與徵兵指令</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- 遊走職 -->
+                <div class="ff-panel p-8">
+                    <h3 class="text-xl font-bold text-white mb-4 border-b border-[--ff-border] pb-2 flex items-center gap-2">
+                        <i data-lucide="globe" class="text-[--ff-gold-light] w-5 h-5"></i> 戰場雇傭兵 (Mercenaries)
+                    </h3>
+                    <p class="text-gray-400 text-sm mb-6 leading-relaxed">
+                        不受國境限制的自由冒險者。在共同演練協議下，任何大國防聯軍皆可發出懸賞，招募這兩類職業作為戰力補充。
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-4 bg-black/40 p-4 rounded border border-gray-800">
+                            <img src="https://xivapi.com/cj/1/pictomancer.png" onerror="this.src='https://img.icons8.com/color/48/paint-palette.png'" class="w-12 h-12" alt="PCT">
+                            <div>
+                                <h4 class="text-blue-300 font-bold">畫家 <span class="text-xs text-gray-500 font-normal ml-2">流浪的藝術家</span></h4>
+                                <p class="text-xs text-gray-400 mt-1 leading-relaxed">法系輸出｜提供團隊增益，並具備強大爆發力的支援法師。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4 bg-black/40 p-4 rounded border border-gray-800">
+                            <img src="https://xivapi.com/cj/1/viper.png" onerror="this.src='https://img.icons8.com/color/48/sword.png'" class="w-12 h-12" alt="VPR">
+                            <div>
+                                <h4 class="text-blue-300 font-bold">奎蛇劍士 <span class="text-xs text-gray-500 font-normal ml-2">雇傭狩獵者</span></h4>
+                                <p class="text-xs text-gray-400 mt-1 leading-relaxed">近戰刺客｜極高機動性，擅長在敵陣中穿梭並收割殘血目標。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 分組規則 -->
+                <div class="ff-panel p-8">
+                    <h3 class="text-xl font-bold text-white mb-4 border-b border-[--ff-border] pb-2 flex items-center gap-2">
+                        <i data-lucide="scroll" class="text-[--ff-gold-light] w-5 h-5"></i> 分流與調度軍規
+                    </h3>
+                    <div class="space-y-6 mt-6">
+                        <div class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full bg-[--ff-gold-dark] text-white font-black flex items-center justify-center shrink-0">1</div>
+                            <div>
+                                <h4 class="text-[--ff-gold-light] font-bold mb-1">入軍志願</h4>
+                                <p class="text-sm text-gray-400 leading-relaxed">填寫報名表時，請宣告您的第一志願與第二志願所屬聯軍。</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full bg-[--ff-gold-dark] text-white font-black flex items-center justify-center shrink-0">2</div>
+                            <div>
+                                <h4 class="text-[--ff-gold-light] font-bold mb-1">傭兵契約</h4>
+                                <p class="text-sm text-gray-400 leading-relaxed">勾選「願意簽署傭兵契約」者，總指揮部將可能視您為受僱傭兵，派往缺乏特定職位（坦/補）的聯軍陣線支援。</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full bg-[--ff-gold-dark] text-white font-black flex items-center justify-center shrink-0">3</div>
+                            <div>
+                                <h4 class="text-[--ff-gold-light] font-bold mb-1">戰力平衡</h4>
+                                <p class="text-sm text-gray-400 leading-relaxed">最終出戰名單將由聯軍指揮部（主辦方）根據戰術邏輯與隊伍平衡進行最終調度。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-black py-8 text-center text-gray-600 text-sm border-t border-gray-900">
+        <p>Eorzean Alliance Mock Battle © 2024. Created for FF14 PVP & RP Community.</p>
+    </footer>
+
+    <!-- 5. 聯軍詳細檔案 (Modal) -->
+    <div id="faction-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 modal-overlay opacity-0 transition-opacity duration-300">
+        
+        <div class="ff-panel w-full max-w-5xl max-h-[90vh] flex flex-col shadow-[0_0_50px_rgba(0,0,0,1)]">
+            
+            <!-- Modal Header -->
+            <div class="p-6 border-b border-[--ff-border] flex justify-between items-center relative overflow-hidden shrink-0 bg-black/40">
+                <!-- 背景徽章浮水印 -->
+                <img id="modal-watermark" src="" alt="logo" class="absolute right-0 top-1/2 -translate-y-1/2 w-48 opacity-10 pointer-events-none filter grayscale">
+                
+                <div class="relative z-10 flex items-center gap-4">
+                    <img id="modal-header-icon" src="" alt="icon" class="w-12 h-12 filter drop-shadow-md">
+                    <div>
+                        <p id="modal-subtitle" class="text-[--ff-gold] tracking-widest text-xs uppercase font-black">Grand Company</p>
+                        <h3 id="modal-title" class="text-3xl font-black text-white ff-title tracking-wider">聯軍名稱</h3>
+                    </div>
+                </div>
+                
+                <button onclick="closeModal()" class="relative z-10 text-gray-400 hover:text-white transition-colors bg-black/50 p-2 rounded border border-gray-700 hover:border-[--ff-gold]">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 md:p-8 overflow-y-auto flex-grow bg-[rgba(10,10,12,0.9)] text-gray-300">
+                
+                <!-- 故事與語錄 -->
+                <div class="flex flex-col lg:flex-row gap-8 mb-10">
+                    <div class="flex-1">
+                        <h4 class="text-[--ff-gold-light] font-black text-lg mb-3 flex items-center gap-2 border-b border-[--ff-gold-dark]/40 pb-2">
+                            <i data-lucide="scroll-text" class="w-5 h-5"></i> 參戰動機與軍事風格
+                        </h4>
+                        <p id="modal-lore" class="text-sm md:text-base leading-relaxed text-gray-300 text-justify font-serif"></p>
+                    </div>
+                    
+                    <div class="lg:w-1/3">
+                        <div class="bg-black/50 border border-gray-800 p-6 rounded relative h-full flex flex-col justify-center">
+                            <i data-lucide="quote" class="absolute top-4 left-4 text-gray-700 w-8 h-8 opacity-50"></i>
+                            <p id="modal-quote" class="text-[--ff-gold] font-serif leading-relaxed text-sm relative z-10 font-bold italic mb-3"></p>
+                            <p id="modal-leader" class="text-right text-gray-400 text-xs tracking-wider relative z-10"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 特殊軍規 -->
+                <div id="modal-special-rule" class="hidden mb-8 bg-[#2a1a1a] border-l-4 border-red-800 p-4 rounded shadow-inner">
+                    <h4 class="text-red-400 font-black mb-2 flex items-center gap-2 text-sm tracking-wider">
+                        <i data-lucide="alert-triangle" class="w-4 h-4"></i> 指揮部特殊指令
+                    </h4>
+                    <p id="modal-rule-text" class="text-gray-300 text-sm leading-relaxed"></p>
+                </div>
+
+                <!-- 職業清單 -->
+                <div>
+                    <h4 class="text-[--ff-gold-light] font-black text-lg mb-4 flex items-center gap-2 border-b border-[--ff-gold-dark]/40 pb-2">
+                        <i data-lucide="swords" class="w-5 h-5"></i> 戰術編制與職業定位
+                    </h4>
+                    
+                    <div class="space-y-8">
+                        <!-- 核心軍編區塊 -->
+                        <div>
+                            <h5 class="text-xs text-gray-500 uppercase tracking-widest mb-3 font-bold">▶ 核心軍編 (Core Forces)</h5>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="modal-core-jobs"></div>
+                        </div>
+                        
+                        <!-- 遊走雇傭區塊 -->
+                        <div id="roaming-section">
+                            <h5 class="text-xs text-gray-500 uppercase tracking-widest mb-3 font-bold">▶ 遊走雇傭 (Roaming Support)</h5>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="modal-roaming-jobs"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // XIVAPI 圖示路徑映射
+        const jobIconMap = {
+            '戰士': 'warrior.png', '騎士': 'paladin.png', '暗黑騎士': 'darkknight.png', '絕槍戰士': 'gunbreaker.png',
+            '白魔道士': 'whitemage.png', '學者': 'scholar.png', '占星術師': 'astrologian.png', '賢者': 'sage.png',
+            '武僧': 'monk.png', '龍騎士': 'dragoon.png', '忍者': 'ninja.png', '武士': 'samurai.png', '釤鐮客': 'reaper.png',
+            '吟遊詩人': 'bard.png', '機工士': 'machinist.png', '舞者': 'dancer.png',
+            '黑魔道士': 'blackmage.png', '召喚士': 'summoner.png', '赤魔道士': 'redmage.png'
+        };
+
+        const getJobIcon = (jobName) => {
+            const cleanName = jobName.split('(')[0].trim();
+            const filename = jobIconMap[cleanName];
+            return filename ? `https://xivapi.com/cj/1/${filename}` : 'https://img.icons8.com/color/48/sword.png';
+        };
+
+        // 職業資料生成模板 (更清晰的兵種卡片)
+        const generateJobHTML = (job, isCore) => {
+            const tagColor = isCore ? 'text-red-400 border-red-900/50 bg-red-900/10' : 'text-blue-400 border-blue-900/50 bg-blue-900/10';
+            const tagText = isCore ? 'CORE' : 'ROAM';
+            
+            return `
+            <div class="job-row flex gap-4 p-3 bg-black/40 border border-gray-800 rounded relative">
+                <img src="${getJobIcon(job.name)}" onerror="this.src='https://img.icons8.com/color/48/sword.png'" class="w-10 h-10 shrink-0 filter drop-shadow-md" alt="icon">
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1 flex-wrap">
+                        <span class="font-bold text-gray-100">${job.name}</span>
+                        <span class="text-[10px] px-1.5 py-0.5 border rounded-sm font-bold tracking-wider ${tagColor}">${tagText}</span>
+                        <span class="text-xs text-[--ff-gold] font-serif truncate">| ${job.lore}</span>
+                    </div>
+                    <p class="text-xs text-gray-400 leading-snug">${job.role}</p>
+                </div>
+            </div>
+            `;
+        };
+
+        // 大國防聯軍數據 (旗幟更換為高畫質連結，並分配背景色調)
+        const factions = [
+            {
+                id: 'uldah',
+                name: '不滅隊',
+                subtitle: "The Immortal Flames",
+                bgGradient: 'from-[#2a1b00] to-[#1a1100]',
+                flagUrl: 'https://ffxiv.gamerescape.com/wiki/Special:FilePath/Immortal_Flames_Logo.png',
+                leader: '勞班·阿爾丁',
+                quote: '「哈哈哈！戰場真棒......出現能成為導師的敵人，就能看清能成為戰友的同伴。」',
+                lore: '黃金與權力的沙漠明珠。面對本次洲際演練，不滅隊結合了銀冑團的重裝防禦與納爾札爾教團的毀滅魔法，同時暗中收編了流亡者的暗殺技術。他們在戰場上是一支能死守水晶陣地、具備毀滅性定點火力的重砲軍隊。',
+                jobs: [
+                    { name: '騎士', lore: '銀冑團近衛', role: '前排坦克｜唯一能真正「代替隊友承受傷害」與無敵守護的鐵壁。', type: 'Core' },
+                    { name: '黑魔道士', lore: '納爾札爾教團', role: '法系輸出｜極度依賴讀條，但擁有毀滅性範圍冰火魔法與控制。', type: 'Core' },
+                    { name: '武僧', lore: '拉爾格星導教', role: '近戰鬥士｜極度難纏的貼身連擊，並能擊碎敵方護盾。', type: 'Core' },
+                    { name: '釤鐮客', lore: '底層暗殺公會', role: '近戰刺客｜能對群體施加恐懼效果，擾亂陣型並打出高爆發。', type: 'Core' },
+                    { name: '武士', lore: '受僱東方浪人', role: '近戰鬥士｜擁有恐怖的「反擊斬殺」機制，令對手不敢輕易攻擊。', type: 'Roaming' },
+                    { name: '赤魔道士', lore: '追求全才的冒險者', role: '法系輸出｜靈活切換遠程魔法與近戰突刺，並兼具輔助生存力。', type: 'Roaming' }
+                ],
+                specialRule: null
+            },
+            {
+                id: 'limsa',
+                name: '黑渦團',
+                subtitle: 'The Maelstrom',
+                bgGradient: 'from-[#3a0b0b] to-[#1a0505]',
+                flagUrl: 'https://ffxiv.gamerescape.com/wiki/Special:FilePath/Maelstrom_Logo.png',
+                leader: '梅爾維布·布魯菲斯溫',
+                quote: '「勝利好比海洋......只有知曉天候、控制部下、看清潮流的人才會被眷顧。」',
+                lore: '由強大的黑渦團艦隊守護的海洋之都。為展現海都的強悍，他們在演練中派出了狂暴的海盜先鋒與尼姆軍事醫學的繼承者。這是一支將近東商船技術與地下公會戰法完美融合，具備極強先手爆發與高機動性的快節奏軍隊。',
+                jobs: [
+                    { name: '戰士', lore: '海盜先鋒部隊', role: '前排坦克｜擁有全職業最強的「拉人」先手控場與突進爆發。', type: 'Core' },
+                    { name: '學者', lore: '尼姆軍事醫學', role: '戰術輔助｜提供團隊高額護盾，並能大幅提升集火傷害。', type: 'Core' },
+                    { name: '召喚士 (巴術)', lore: '海都秘術公會', role: '法系輸出｜能製造巨大範圍傷害，迫使敵人離開水晶。', type: 'Core' },
+                    { name: '忍者', lore: '雙劍士地下公會', role: '近戰刺客｜具備隱身突襲與直接秒殺殘血目標的忍術。', type: 'Core' },
+                    { name: '機工士', lore: '引進的火炮技術', role: '遠程物理｜提供致命的狙擊與極高頻率的單體火力壓制。', type: 'Roaming' },
+                    { name: '舞者', lore: '近東商船傳入', role: '遠程物理｜具備超高機動性，能強化隊友並擁有強大範圍群控。', type: 'Roaming' }
+                ],
+                specialRule: null
+            },
+            {
+                id: 'gridania',
+                name: '雙蛇黨',
+                subtitle: 'Order of the Twin Adder',
+                bgGradient: 'from-[#14301a] to-[#0a180d]',
+                flagUrl: 'https://ffxiv.gamerescape.com/wiki/Special:FilePath/Order_of_the_Twin_Adder_Logo.png',
+                leader: '嘉恩·艾·神納',
+                quote: '「時而如柳，時而如樫，現在正是忍耐之時。總有一天，風必定會站在我們這邊。」',
+                lore: '隱於黑衣森林的自然守護者。面對演練，雙蛇黨以幻術皇的治癒之光為核心，搭配神勇隊的箭矢與鄰國龍騎士的邊境協防。他們擁有全聯盟最強的遠程牽制與回復續航力，擅長以柔克剛的持久拉鋸戰。',
+                jobs: [
+                    { name: '吟遊詩人', lore: '神勇隊弓兵', role: '遠程物理｜提供全隊增益與持續遠程輸出，擅長風箏對手。', type: 'Core' },
+                    { name: '白魔道士', lore: '幻術皇之光', role: '戰術輔助｜將敵人變成河童的強力控制，與瞬間逆轉血量的極光。', type: 'Core' },
+                    { name: '龍騎士', lore: '鄰國邊境協防', role: '近戰刺客｜能躍入空中規避傷害，並對地發動毀滅性的範圍俯衝。', type: 'Core' },
+                    { name: '召喚士', lore: '森林亞靈魂研究', role: '法系輸出｜召喚強大的召喚獸造成持續大範圍火力覆蓋。', type: 'Roaming' }
+                ],
+                specialRule: null
+            },
+            {
+                id: 'ishgard',
+                name: '伊修加爾德',
+                subtitle: 'Temple Knights',
+                bgGradient: 'from-[#0f1b2e] to-[#050912]',
+                flagUrl: 'https://ffxiv.gamerescape.com/wiki/Special:FilePath/Ishgard_Flag.png',
+                leader: '艾默里克·德·博雷爾',
+                quote: '「真正的變革，必須由我們自己親手完成。為了這片蒼天，也為了那些在寒雪中倒下的英靈。」',
+                lore: '歷經千年龍詩戰爭的冰雪皇都。在回歸聯盟後，他們帶著極度傳統且強悍的騎士武裝參與演練。善於利用暗黑騎士的牽引配合天鋼機工房的火力或占星術的重力，是一支講究高壓爆發與防禦反擊的鐵血軍隊。',
+                jobs: [
+                    { name: '暗黑騎士', lore: '底層正義代行者', role: '前排坦克｜以消耗生命值換取護盾，擁有大範圍牽引敵人的吸力。', type: 'Core' },
+                    { name: '機工士', lore: '天鋼機工房', role: '遠程物理｜放置防禦塔進行陣地戰，並擁有能秒殺脆皮的狙擊槍。', type: 'Core' },
+                    { name: '占星術師', lore: '聖座觀星者', role: '戰術輔助｜發放不同卡牌增益隊友，並施放能牽制敵人的大範圍重力。', type: 'Core' },
+                    { name: '龍騎士', lore: '神殿騎士團', role: '近戰刺客｜無視地形與距離的無敵跳躍，專切敵方後排。', type: 'Core' },
+                    { name: '騎士', lore: '沒落貴族之誓', role: '前排坦克｜保護脆弱隊友，持盾堅守水晶陣地的中堅力量。', type: 'Core' }
+                ],
+                specialRule: null
+            },
+            {
+                id: 'eastern',
+                name: '東方聯盟',
+                subtitle: 'Far Eastern Alliance',
+                bgGradient: 'from-[#381119] to-[#1c080c]',
+                flagUrl: 'https://ffxiv.gamerescape.com/wiki/Special:FilePath/Kugane_Flag.png',
+                leader: '飛燕',
+                quote: '「兵來將擋，水來土掩。多瑪的利刃，從不畏懼強敵！讓他們見識東方武士的氣魄！」',
+                lore: '由多瑪、遠東之國與博茲雅組成的反抗集結。為了在此次演練中展現東方武學的威儀，他們融合了極致的單兵作戰能力，強調捨生忘死的進攻。這是一支考驗極限操作、猶如利刃般的近戰刺殺與游擊隊。',
+                jobs: [
+                    { name: '武士', lore: '多瑪武士道', role: '近戰鬥士｜防禦反擊的王者，開啟「地天」後受擊能觸發範圍秒殺。', type: 'Core' },
+                    { name: '忍者', lore: '遠東隱里之術', role: '近戰刺客｜能隱身繞後，並直接使用忍術斬殺生命值過低的敵人。', type: 'Core' },
+                    { name: '絕槍戰士', lore: '博茲雅女王衛隊', role: '鬥士坦克｜能透過打擊敵人為自身或隊友賦予護盾，輸出極高的坦職。', type: 'Core' },
+                    { name: '召喚士', lore: '東方降神與式神', role: '法系輸出｜運用東方秘術召喚星晶獸，提供大範圍戰場壓制。', type: 'Core' },
+                    { name: '武僧', lore: '阿拉米格援軍', role: '近戰鬥士｜以迅雷不及掩耳的體術突進，擊潰敵方的防禦陣型。', type: 'Roaming' }
+                ],
+                specialRule: '<strong>神話再現指令：</strong> 聯軍中允許編制一名 <strong>Lv60+ 的占星術師</strong>（視為東方陰陽師/占卜師）。此外，若隊內有召喚士，其極限技 (LB) 必須至少施放一次<strong>「不死鳥之加護」(鳳凰)</strong>，以象徵朱雀式神降臨庇佑戰線。'
+            },
+            {
+                id: 'sharlayan',
+                name: '薩雷安同盟',
+                subtitle: 'Sharlayan & Thavnair',
+                bgGradient: 'from-[#0d2a2a] to-[#061515]',
+                flagUrl: 'https://ffxiv.gamerescape.com/wiki/Special:FilePath/Sharlayan_Flag.png',
+                leader: '弗爾什諾·萊韋耶勒爾',
+                quote: '「知識就是力量。但若無法化為保護星海的盾，便毫無意義。展現我們積累的智慧吧。」',
+                lore: '知識的殿堂與鍊金術的頂點。作為本次聯合軍演的特殊參與方，他們不尚武力，而是以複雜的魔法屏障、占星輔助與賢學防護武裝自己。雖然缺乏前線衝鋒的兵刃，但擁有讓敵人深感絕望的極致生存與回復能力。',
+                jobs: [
+                    { name: '賢者', lore: '薩雷安先進醫療', role: '戰術輔助｜藉由攻擊敵人來治癒隊友，擅長機動防禦的屏障治療。', type: 'Core' },
+                    { name: '占星術師', lore: '舊薩雷安觀星術', role: '戰術輔助｜操控星辰之力，為團隊提供源源不絕的火力增強。', type: 'Core' },
+                    { name: '學者', lore: '軍事戰術學家', role: '戰術輔助｜在戰場施加強大護盾與減傷結界，徹底瓦解對手的爆發。', type: 'Core' },
+                    { name: '黑魔道士', lore: '魔法學術極致', role: '法系輸出｜作為同盟唯一的重砲，在後方詠唱改變地形的毀滅魔法。', type: 'Roaming' },
+                    { name: '白魔道士', lore: '魔法學術極致', role: '戰術輔助｜提供爆發性的純粹治療與光屬性魔法掃蕩。', type: 'Roaming' }
+                ],
+                specialRule: '<strong>學術集結指令：</strong> 由於軍事戰鬥職位受限，薩雷安同盟是本次模擬戰中<strong>「唯一允許單一職業重複編制」</strong>的大國防聯軍（例如：雙賢者、雙占星等配置皆視為合法）。'
+            }
+        ];
+
+        // 渲染首頁軍旗卡片 (Banners)
+        const container = document.getElementById('faction-container');
+        
+        factions.forEach(faction => {
+            const card = document.createElement('div');
+            // 替換背景色，加上軍旗的設計
+            card.className = `banner-card bg-gradient-to-b ${faction.bgGradient} group`;
+            card.onclick = () => openModal(faction);
+            
+            card.innerHTML = `
+                <!-- 裝飾用暗紋背景 -->
+                <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/crissxcross.png')] pointer-events-none"></div>
+                
+                <!-- 巨大的國徽/隊徽 -->
+                <img src="${faction.flagUrl}" onerror="this.style.display='none'" class="banner-logo" alt="${faction.name} Logo">
+                
+                <!-- 底部文字區 -->
+                <div class="banner-text pb-4">
+                    <h3 class="text-3xl font-black text-white ff-title tracking-widest text-glow">${faction.name}</h3>
+                    <span class="text-[--ff-gold] text-[10px] tracking-[0.2em] uppercase font-bold mt-1 block opacity-80">${faction.subtitle}</span>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        // 模態框邏輯
+        const modal = document.getElementById('faction-modal');
+
+        function openModal(faction) {
+            // 填充文字資料
+            document.getElementById('modal-title').textContent = faction.name;
+            document.getElementById('modal-subtitle').textContent = faction.subtitle;
+            document.getElementById('modal-lore').textContent = faction.lore;
+            document.getElementById('modal-quote').textContent = faction.quote;
+            document.getElementById('modal-leader').textContent = `—— ${faction.leader}`;
+            
+            // 替換圖片
+            document.getElementById('modal-watermark').src = faction.flagUrl;
+            document.getElementById('modal-header-icon').src = faction.flagUrl;
+            
+            // 分離並渲染職業清單
+            const coreJobs = faction.jobs.filter(j => j.type === 'Core');
+            const roamingJobs = faction.jobs.filter(j => j.type === 'Roaming');
+            
+            document.getElementById('modal-core-jobs').innerHTML = coreJobs.map(job => generateJobHTML(job, true)).join('');
+            
+            const roamingContainer = document.getElementById('modal-roaming-jobs');
+            const roamingSection = document.getElementById('roaming-section');
+            if (roamingJobs.length > 0) {
+                roamingContainer.innerHTML = roamingJobs.map(job => generateJobHTML(job, false)).join('');
+                roamingSection.classList.remove('hidden');
+            } else {
+                roamingSection.classList.add('hidden');
+            }
+
+            // 特殊規則處理
+            const ruleBox = document.getElementById('modal-special-rule');
+            if (faction.specialRule) {
+                document.getElementById('modal-rule-text').innerHTML = faction.specialRule;
+                ruleBox.classList.remove('hidden');
+            } else {
+                ruleBox.classList.add('hidden');
+            }
+
+            // 顯示模態框
+            modal.classList.remove('hidden');
+            void modal.offsetWidth; // Trigger reflow
+            modal.classList.remove('opacity-0');
+            modal.classList.add('modal-active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0');
+            modal.classList.remove('modal-active');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+        });
+    </script>
+</body>
+</html>
